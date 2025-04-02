@@ -2,10 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>公告</title>
+    <title>公告咨询</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .announcement {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .announcement h2 {
+            margin-top: 0;
+        }
+    </style>
 </head>
 <body>
-<h1>公告</h1>
-<!-- 这里可以添加公告内容展示 -->
+<h1>公告咨询</h1>
+<div id="announcementList"></div>
+<script>
+    console.log('开始请求公告数据...');
+    fetch('/pickup_SpringBoot/announcements')
+        .then(response => {
+            if (!response.ok) {
+                console.error('网络请求失败，状态码:', response.status);
+                throw new Error('网络请求失败');
+            }
+            console.log('请求成功，开始解析 JSON 数据...');
+            return response.json();
+        })
+        .then(data => {
+            console.log('JSON 数据解析成功，公告数据:', data);
+            const announcementList = document.getElementById('announcementList');
+            data.forEach(announcement => {
+                const div = document.createElement('div');
+                div.classList.add('announcement');
+                const h2 = document.createElement('h2');
+                h2.textContent = announcement.title;
+                const p = document.createElement('p');
+                p.textContent = announcement.content;
+                const small = document.createElement('small');
+                // 注意这里的字段名要与后端返回的字段名一致
+                small.textContent = new Date(announcement.publish_time).toLocaleString();
+                div.appendChild(h2);
+                div.appendChild(p);
+                div.appendChild(small);
+                announcementList.appendChild(div);
+            });
+        })
+        .catch(error => {
+            console.error('获取公告失败:', error);
+            alert('获取公告失败，请检查网络或联系管理员');
+        });
+</script>
 </body>
 </html>
