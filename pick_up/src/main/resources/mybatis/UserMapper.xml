@@ -6,4 +6,18 @@
     <select id="selectAllUsers" resultType="org.example.pojo.User">
         select * from ordinary_users
     </select>
+    <select id="selectUserByPhoneAndPassword" resultType="org.example.pojo.User">
+        select * from ordinary_users where phone_number = #{phone_number} and password = #{password}
+    </select>
+    <select id="selectUserByPhoneNumber" resultType="org.example.pojo.User">
+        select * from ordinary_users where phone_number = #{phone_number}
+    </select>
+    <update id="updateUserInfo" parameterType="org.example.pojo.User">
+        update ordinary_users
+        set name = #{name},
+        nickname = #{nickname},
+        contact_info = #{contact_info},
+        address = #{address}
+        where phone_number = #{phone_number}
+    </update>
 </mapper>
