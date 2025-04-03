@@ -34,13 +34,23 @@ public class UserController {
 
     @RequestMapping("/login")
     @ResponseBody
-    public String login(String phone_number, String password, HttpServletRequest request) {
-        User user = userService.login(phone_number, password);
+    public String login(@RequestParam String phone_number, @RequestParam String password, @RequestParam String role, HttpServletRequest request) {
+        User user = null;
+        if ("ordinary_user".equals(role)) {
+            user = userService.login(phone_number, password);
+        } else if ("part_time_user".equals(role)) {
+            // 这里需要实现兼职用户的登录逻辑，假设存在 PartTimeUserService
+            // user = partTimeUserService.login(phone_number, password);
+        } else if ("admin".equals(role)) {
+            // 这里需要实现管理员的登录逻辑，假设存在 AdminService
+            // user = adminService.login(phone_number, password);
+        }
+
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("phone_number", phone_number);
-            int userId = user.getUser_id(); // 获取用户 ID
-            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); sessionStorage.setItem('userId', '" + userId + "'); window.location.href='/pickup_SpringBoot/dashboard.html';</script>";
+            session.setAttribute("role", role); // 保存用户角色
+            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); sessionStorage.setItem('role', '" + role + "'); window.location.href='/pickup_SpringBoot/dashboard.html';</script>";
         }
         return "登录失败";
     }
@@ -85,9 +95,19 @@ public class UserController {
         return "announcement.html";
     }
 
-    @RequestMapping("/expressPickup")
-    public String expressPickup() {
-        return "expressPickup.html";
+    @RequestMapping("/submitApplication")
+    public String submitApplication() {
+        return "submitApplication.html";
+    }
+
+    @RequestMapping("/viewPickupRecords")
+    public String viewPickupRecords() {
+        return "viewPickupRecords.html";
+    }
+
+    @RequestMapping("/trackPackageStatus")
+    public String trackPackageStatus() {
+        return "trackPackageStatus.html";
     }
 
     @RequestMapping("/notification")

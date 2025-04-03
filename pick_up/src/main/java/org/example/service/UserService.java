@@ -9,4 +9,5 @@ public interface UserService {
     User login(String phone_number, String password);
     User getUserByPhoneNumber(String phone_number);
     boolean updateUserInfo(User user);
+    User loginByRole(String phone_number, String password, String role);
 }

@@ -20,8 +20,24 @@
 <h1>欢迎登录</h1>
 <button onclick="window.location.href='/pickup_SpringBoot/personalCenter'">个人中心</button>
 <button onclick="window.location.href='/pickup_SpringBoot/announcement'">公告</button>
-<button onclick="window.location.href='/pickup_SpringBoot/expressPickup'">快递代取</button>
+<button onclick="window.location.href='/pickup_SpringBoot/submitApplication'">提交代取申请</button>
+<button onclick="window.location.href='/pickup_SpringBoot/viewPickupRecords'">查看代取记录</button>
+<!-- 修改快递状态跟踪按钮的点击逻辑 -->
+<button onclick="checkRoleForTrack()">快递状态跟踪</button>
 <button onclick="window.location.href='/pickup_SpringBoot/notification'">通知</button>
 <button onclick="window.location.href='/pickup_SpringBoot/feedback'">评价与反馈</button>
+
+<script>
+    function checkRoleForTrack() {
+        const role = sessionStorage.getItem('role');
+        if (role === 'ordinary_user') {
+            alert('普通用户无权限进入快递状态跟踪模块');
+            return;
+        }
+        // 非普通用户正常跳转
+        window.location.href = '/pickup_SpringBoot/trackPackageStatus';
+    }
+</script>
+
 </body>
 </html>

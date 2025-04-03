@@ -114,6 +114,11 @@
     }
 
     function updatePackageStatus() {
+        const role = sessionStorage.getItem('role');
+        if (role !== 'part_time_user' && role !== 'admin') {
+            alert('只有兼职用户和管理员可以进行快递状态跟踪操作');
+            return;
+        }
         const packageId = document.getElementById('packageId').value;
         const status = document.getElementById('status').value;
         fetch('/pickup_SpringBoot/expressPickup/updatePackageStatus?packageId=' + packageId +

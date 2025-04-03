@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看代取记录</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>查看代取记录</h1>
+<button type="button" onclick="getPickupRecords()">查看记录</button>
+<div id="pickupRecordsList"></div>
+<script>
+    function getPickupRecords() {
+        const userId = sessionStorage.getItem('userId'); // 从 sessionStorage 获取用户 ID
+        if (!userId) {
+            alert('请先登录');
+            return;
+        }
+        fetch('/pickup_SpringBoot/expressPickup/getPickupRecords?userId=' + userId)
+            .then(response => response.json())
+            .then(data => {
+                const pickupRecordsList = document.getElementById('pickupRecordsList');
+                pickupRecordsList.innerHTML = '';
+                data.forEach(record => {
+                    const div = document.createElement('div');
+                    div.textContent = '申请ID: ' + record.application_id +
+                        ', 包裹ID: ' + record.package_id +
+                        ', 代取时间: ' + new Date(record.pickup_time).toLocaleString() +
+                        ', 代取地点: ' + record.pickup_location +
+                        ', 状态: ' + record.status;
+                    pickupRecordsList.appendChild(div);
+                });
+            });
+    }
+</script>
+</body>
+</html>

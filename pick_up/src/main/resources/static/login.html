@@ -6,10 +6,16 @@
 </head>
 <body>
 <form action="/pickup_SpringBoot/login" method="get">
-    <label for="phone_number">账号:</label>
+    账号:
     <input type="text" id="phone_number" name="phone_number"><br><br>
-    <label for="password">密码:</label>
+    密码:
     <input type="password" id="password" name="password"><br><br>
+    <label for="role">用户身份:</label>
+    <select id="role" name="role">
+        <option value="ordinary_user">普通用户</option>
+        <option value="part_time_user">兼职用户</option>
+        <option value="admin">管理员</option>
+    </select><br><br>
     <input type="submit" value="登录">
 </form>
 </body>
