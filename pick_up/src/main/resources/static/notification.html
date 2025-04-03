@@ -6,6 +6,23 @@
 </head>
 <body>
 <h1>通知</h1>
-<!-- 这里可以添加通知内容展示 -->
+<div id="notificationList"></div>
+<script>
+    const userId = sessionStorage.getItem('userId');
+    if (userId) {
+        fetch('/pickup_SpringBoot/notifications/getByUserId?userId=' + userId)
+            .then(response => response.json())
+            .then(data => {
+                const notificationList = document.getElementById('notificationList');
+                data.forEach(notification => {
+                    const div = document.createElement('div');
+                    div.textContent = notification.notificationType + "：" + notification.content + "（" + new Date(notification.createdAt).toLocaleString() + "）";
+                    notificationList.appendChild(div);
+                });
+            });
+    } else {
+        alert('请先登录');
+    }
+</script>
 </body>
 </html>
