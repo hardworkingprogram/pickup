@@ -39,7 +39,8 @@ public class UserController {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("phone_number", phone_number);
-            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); window.location.href='/pickup_SpringBoot/dashboard.html';</script>";
+            int userId = user.getUser_id(); // 获取用户 ID
+            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); sessionStorage.setItem('userId', '" + userId + "'); window.location.href='/pickup_SpringBoot/dashboard.html';</script>";
         }
         return "登录失败";
     }
