@@ -3,9 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <title>评价与反馈</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
 </head>
 <body>
 <h1>评价与反馈</h1>
-<!-- 这里可以添加评价与反馈的表单 -->
+<form id="feedbackForm">
+    <label for="packageId">包裹ID:</label>
+    <input type="text" id="packageId" name="packageId"><br>
+    <label for="satisfaction">满意度评分:</label>
+    <select id="satisfaction" name="satisfaction">
+        <option value="1">1分</option>
+        <option value="2">2分</option>
+        <option value="3">3分</option>
+        <option value="4">4分</option>
+        <option value="5">5分</option>
+    </select><br>
+    <label for="feedback">反馈意见:</label>
+    <textarea id="feedback" name="feedback" rows="4" cols="30"></textarea><br>
+    <label for="isComplaint">是否为投诉:</label>
+    <input type="checkbox" id="isComplaint" name="isComplaint"><br>
+    <button type="button" onclick="submitFeedback()">提交反馈</button>
+</form>
+<script>
+    function submitFeedback() {
+        const userId = sessionStorage.getItem('userId');
+        const packageId = document.getElementById('packageId').value;
+        const satisfaction = document.getElementById('satisfaction').value;
+        const feedback = document.getElementById('feedback').value;
+        const isComplaint = document.getElementById('isComplaint').checked;
+
+        const data = {
+            user_id: userId,
+            package_id: packageId,
+            satisfaction: satisfaction,
+            feedback: feedback,
+            is_complaint: isComplaint
+        };
+
+        fetch('/pickup_SpringBoot/evaluations/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+            });
+    }
+
+    // 假设从 URL 参数中获取包裹 ID
+    const urlParams = new URLSearchParams(window.location.search);
+    const packageId = urlParams.get('packageId');
+    if (packageId) {
+        document.getElementById('packageId').value = packageId;
+    }
+</script>
 </body>
 </html>
