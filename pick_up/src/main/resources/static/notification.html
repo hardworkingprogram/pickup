@@ -10,13 +10,15 @@
 <script>
     const userId = sessionStorage.getItem('userId');
     if (userId) {
-        fetch('/pickup_SpringBoot/notifications/getByUserId?userId=' + userId)
+        // 修改请求路径与后端一致
+        fetch(`/pickup_SpringBoot/notifications/${userId}`)
             .then(response => response.json())
             .then(data => {
                 const notificationList = document.getElementById('notificationList');
                 data.forEach(notification => {
                     const div = document.createElement('div');
-                    div.textContent = notification.notificationType + "：" + notification.content + "（" + new Date(notification.createdAt).toLocaleString() + "）";
+                    // 修改字段名与后端一致
+                    div.textContent = `${notification.notification_type}：${notification.content}（${new Date(notification.send_time).toLocaleString()}）`;
                     notificationList.appendChild(div);
                 });
             });
