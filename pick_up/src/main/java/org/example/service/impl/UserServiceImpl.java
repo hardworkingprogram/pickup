@@ -24,8 +24,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByPhoneNumber(String phone_number) {
-        return userMapper.selectUserByPhoneNumber(phone_number);
+    public User getUserById(int user_id) {
+        return userMapper.selectUserById(user_id);
     }
 
     @Override

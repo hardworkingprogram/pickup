@@ -32,6 +32,7 @@ public class UserController {
         return s;
     }
 
+//    todo:这里需要实现注册功能
     @RequestMapping("/login")
     @ResponseBody
     public String login(@RequestParam String phone_number, @RequestParam String password, @RequestParam String role, HttpServletRequest request) {
@@ -45,12 +46,13 @@ public class UserController {
             // 这里需要实现管理员的登录逻辑，假设存在 AdminService
             // user = adminService.login(phone_number, password);
         }
-
+        //todo:登录功能session需要保存用户的id以便后续操作
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("phone_number", phone_number);
             session.setAttribute("role", role); // 保存用户角色
-            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); sessionStorage.setItem('role', '" + role + "'); window.location.href='/pickup_SpringBoot/dashboard.html';</script>";
+            session.setAttribute("user_id", user.getUser_id());
+            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); sessionStorage.setItem('role', '" + role + "'); sessionStorage.setItem('userId', '" + user.getUser_id() + "'); window.location.href='/pickup_SpringBoot/dashboard.html';</script>";
         }
         return "登录失败";
     }
@@ -63,8 +65,8 @@ public class UserController {
     }
     @GetMapping("/getPersonalInfo")
     @ResponseBody
-    public Map<String, Object> getPersonalInfo(@RequestParam String phone_number) {
-        User user = userService.getUserByPhoneNumber(phone_number);
+    public Map<String, Object> getPersonalInfo(@RequestParam int user_id) {
+        User user = userService.getUserById(user_id);
         Map<String, Object> result = new HashMap<>();
         if (user != null) {
             result.put("name", user.getName());
@@ -78,7 +80,7 @@ public class UserController {
     @PostMapping("/updatePersonalInfo")
     @ResponseBody
     public String updatePersonalInfo(@RequestBody User user) {
-        System.out.println("接收到的用户信息：" + user);
+        System.out.println("接收到的用户信息：" + user.getUser_id()+" "+user.getPhone_number()+" "+user.getPassword()+" "+user.getName()+" "+user.getNickname()+" "+user.getContact_info()+" "+user.getAddress());
         boolean success = userService.updateUserInfo(user);
         if (success) {
             return "个人信息修改成功";
