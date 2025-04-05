@@ -1,8 +1,8 @@
-package org.example.service.impl;
+package org.example.service.ordinaryUser.impl;
 
-import org.example.mapper.EvaluationMapper;
+import org.example.mapper.ordinaryUser.EvaluationMapper;
 import org.example.pojo.Evaluation;
-import org.example.service.EvaluationService;
+import org.example.service.ordinaryUser.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;

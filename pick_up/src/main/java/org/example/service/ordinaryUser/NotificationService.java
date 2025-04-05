@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.ordinaryUser;
 
 import org.example.pojo.Notification;
 import java.util.List;

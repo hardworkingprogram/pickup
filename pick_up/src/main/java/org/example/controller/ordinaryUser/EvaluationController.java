@@ -1,7 +1,7 @@
-package org.example.controller;
+package org.example.controller.ordinaryUser;
 
 import org.example.pojo.Evaluation;
-import org.example.service.EvaluationService;
+import org.example.service.ordinaryUser.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

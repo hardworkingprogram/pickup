@@ -1,4 +1,4 @@
-package org.example.mapper;
+package org.example.mapper.ordinaryUser;
 
 import org.apache.ibatis.annotations.Param;
 import org.example.pojo.User;

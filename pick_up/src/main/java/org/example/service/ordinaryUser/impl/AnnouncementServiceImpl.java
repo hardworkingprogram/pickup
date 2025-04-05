@@ -1,8 +1,8 @@
-package org.example.service.impl;
+package org.example.service.ordinaryUser.impl;
 
-import org.example.mapper.AnnouncementMapper;
+import org.example.mapper.ordinaryUser.AnnouncementMapper;
 import org.example.pojo.Announcement;
-import org.example.service.AnnouncementService;
+import org.example.service.ordinaryUser.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

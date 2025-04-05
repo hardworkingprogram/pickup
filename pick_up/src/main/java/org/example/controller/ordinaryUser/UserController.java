@@ -1,13 +1,11 @@
-package org.example.controller;
+package org.example.controller.ordinaryUser;
 
 
 import org.example.pojo.User;
-import org.example.service.UserService;
+import org.example.service.ordinaryUser.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -52,7 +50,7 @@ public class UserController {
             session.setAttribute("phone_number", phone_number);
             session.setAttribute("role", role); // 保存用户角色
             session.setAttribute("user_id", user.getUser_id());
-            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); sessionStorage.setItem('role', '" + role + "'); sessionStorage.setItem('userId', '" + user.getUser_id() + "'); window.location.href='/pickup_SpringBoot/dashboard.html';</script>";
+            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); sessionStorage.setItem('role', '" + role + "'); sessionStorage.setItem('userId', '" + user.getUser_id() + "'); window.location.href='/pickup_SpringBoot/ordinaryUser/dashboard.html';</script>";
         }
         return "登录失败";
     }
@@ -61,7 +59,7 @@ public class UserController {
     // 个人中心
     @RequestMapping("/personalCenter")
     public String personalCenter() {
-        return "personalCenter.html";
+        return "/ordinaryUser/personalCenter.html";
     }
     @GetMapping("/getPersonalInfo")
     @ResponseBody
@@ -94,31 +92,31 @@ public class UserController {
 
     @RequestMapping("/announcement")
     public String announcement() {
-        return "announcement.html";
+        return "/ordinaryUser/announcement.html";
     }
 
     @RequestMapping("/submitApplication")
     public String submitApplication() {
-        return "submitApplication.html";
+        return "/ordinaryUser/submitApplication.html";
     }
 
     @RequestMapping("/viewPickupRecords")
     public String viewPickupRecords() {
-        return "viewPickupRecords.html";
+        return "/ordinaryUser/viewPickupRecords.html";
     }
 
     @RequestMapping("/trackPackageStatus")
     public String trackPackageStatus() {
-        return "trackPackageStatus.html";
+        return "/ordinaryUser/trackPackageStatus.html";
     }
 
     @RequestMapping("/notification")
     public String notification() {
-        return "notification.html";
+        return "/ordinaryUser/notification.html";
     }
 
     @RequestMapping("/feedback")
     public String feedback() {
-        return "feedback.html";
+        return "/ordinaryUser/feedback.html";
     }
 }

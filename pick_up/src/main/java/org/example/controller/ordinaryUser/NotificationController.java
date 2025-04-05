@@ -1,7 +1,7 @@
-package org.example.controller;
+package org.example.controller.ordinaryUser;
 
 import org.example.pojo.Notification;
-import org.example.service.NotificationService;
+import org.example.service.ordinaryUser.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;

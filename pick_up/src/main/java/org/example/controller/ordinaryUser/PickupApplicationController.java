@@ -1,7 +1,7 @@
-package org.example.controller;
+package org.example.controller.ordinaryUser;
 
 import org.example.pojo.PickupApplication;
-import org.example.service.PickupApplicationService;
+import org.example.service.ordinaryUser.PickupApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

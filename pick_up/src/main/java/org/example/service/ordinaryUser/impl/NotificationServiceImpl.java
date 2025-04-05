@@ -1,8 +1,8 @@
-package org.example.service.impl;
+package org.example.service.ordinaryUser.impl;
 
-import org.example.mapper.NotificationMapper;
+import org.example.mapper.ordinaryUser.NotificationMapper;
 import org.example.pojo.Notification;
-import org.example.service.NotificationService;
+import org.example.service.ordinaryUser.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;

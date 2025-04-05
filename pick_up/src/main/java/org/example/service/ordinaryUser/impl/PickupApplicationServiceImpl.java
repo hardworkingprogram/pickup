@@ -1,8 +1,8 @@
-package org.example.service.impl;
+package org.example.service.ordinaryUser.impl;
 
-import org.example.mapper.PickupApplicationMapper;
+import org.example.mapper.ordinaryUser.PickupApplicationMapper;
 import org.example.pojo.PickupApplication;
-import org.example.service.PickupApplicationService;
+import org.example.service.ordinaryUser.PickupApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

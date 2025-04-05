@@ -1,4 +1,4 @@
-package org.example.mapper;
+package org.example.mapper.ordinaryUser;
 
 import org.example.pojo.Evaluation;
 import java.util.List;
