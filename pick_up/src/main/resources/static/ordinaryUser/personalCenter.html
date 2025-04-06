@@ -48,7 +48,7 @@
             alert('请先登录');
             return;
         }
-        fetch('/pickup_SpringBoot/getPersonalInfo?user_id=' + userId)
+        fetch('/pickup_SpringBoot/ordinaryUser/getPersonalInfo?user_id=' + userId)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -84,7 +84,7 @@
             contact_info: contact_info,
             address: address
         };
-        fetch('/pickup_SpringBoot/updatePersonalInfo', {
+        fetch('/pickup_SpringBoot/ordinaryUser/updatePersonalInfo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

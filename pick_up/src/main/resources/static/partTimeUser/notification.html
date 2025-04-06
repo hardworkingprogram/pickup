@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>通知提醒</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>通知提醒</h1>
+<button type="button" onclick="getNotifications()">查看通知</button>
+<div id="notificationsList"></div>
+<script>
+    function getNotifications() {
+        const pickupUserId = sessionStorage.getItem('pickupUserId');
+        if (!pickupUserId) {
+            alert('请先登录');
+            return;
+        }
+        fetch('/pickup_SpringBoot/partTimeUser/getNotifications?pickupUserId=' + pickupUserId)
+            .then(response => response.json())
+            .then(data => {
+                const notificationsList = document.getElementById('notificationsList');
+                notificationsList.innerHTML = '';
+                data.forEach(notification => {
+                    const div = document.createElement('div');
+                    div.textContent = '通知类型: ' + notification.type +
+                        ', 内容: ' + notification.content +
+                        ', 时间: ' + new Date(notification.time).toLocaleString();
+                    notificationsList.appendChild(div);
+                });
+            });
+    }
+</script>
+</body>
+</html>

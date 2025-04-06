@@ -12,7 +12,7 @@
             if (role === 'ordinary_user') {
                 form.action = '/pickup_SpringBoot/ordinaryUser/login';
             } else if (role === 'part_time_user') {
-                form.action = '/pickup_SpringBoot/login/parttime';
+                form.action = '/pickup_SpringBoot/partTimeUser/login';
             } else if (role === 'admin') {
                 form.action = '/pickup_SpringBoot/login/admin';
             }
@@ -20,13 +20,13 @@
     </script>
 </head>
 <body>
-<form method="get">
+<form method="get" onsubmit="updateAction();">
     账号:
     <input type="text" id="phone_number" name="phone_number"><br><br>
     密码:
     <input type="password" id="password" name="password"><br><br>
     <label for="role">用户身份:</label>
-    <select id="role" name="role" onchange="updateAction()">
+    <select id="role" name="role">
         <option value="ordinary_user">普通用户</option>
         <option value="part_time_user">兼职用户</option>
         <option value="admin">管理员</option>

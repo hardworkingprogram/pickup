@@ -19,17 +19,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/findAllUsers")
-    @ResponseBody
-    public String findAllUsers() {
-        List list =  userService.findAllUsers();
-        String s = "";
-        for (int i = 0; i < list.size(); i++) {
-            User u = (User)list.get(i);
-            s+=u.getUser_id()+" "+u.getPhone_number()+" "+u.getPassword()+" "+u.getName()+" "+u.getNickname()+" "+u.getContact_info()+" "+u.getAddress()+"<br>";
-        }
-        return s;
-    }
 
 //    todo:这里需要实现注册功能
     @RequestMapping("/login")
@@ -51,7 +40,10 @@ public class UserController {
             session.setAttribute("phone_number", phone_number);
             session.setAttribute("role", role); // 保存用户角色
             session.setAttribute("user_id", user.getUser_id());
-            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); sessionStorage.setItem('role', '" + role + "'); sessionStorage.setItem('userId', '" + user.getUser_id() + "'); window.location.href='/pickup_SpringBoot/ordinaryUser/dashboard.html';</script>";
+            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); " +
+                    "sessionStorage.setItem('role', '" + role + "'); " +
+                    "sessionStorage.setItem('userId', '" + user.getUser_id() + "');" +
+                    " window.location.href='/pickup_SpringBoot/ordinaryUser/dashboard.html';</script>";
         }
         return "登录失败";
     }

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>录入包裹信息</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>录入包裹信息</h1>
+<form id="inputPackageInfoForm">
+    <label for="expressCompany">快递公司:</label>
+    <input type="text" id="expressCompany" name="expressCompany"><br>
+    <label for="trackingNumber">运单号:</label>
+    <input type="text" id="trackingNumber" name="trackingNumber"><br>
+    <label for="recipientId">收件人ID:</label>
+    <input type="text" id="recipientId" name="recipientId"><br>
+    <button type="button" onclick="inputPackageInfo()">录入包裹信息</button>
+</form>
+<script>
+    function inputPackageInfo() {
+        const expressCompany = document.getElementById('expressCompany').value;
+        const trackingNumber = document.getElementById('trackingNumber').value;
+        const recipientId = document.getElementById('recipientId').value;
+        const data = {
+            expressCompany: expressCompany,
+            trackingNumber: trackingNumber,
+            recipientId: recipientId
+        };
+        fetch('/pickup_SpringBoot/packages/insertPackage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(message => alert(message));
+    }
+</script>
+</body>
+</html>

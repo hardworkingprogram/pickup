@@ -18,14 +18,14 @@
 </head>
 <body>
 <h1>欢迎登录</h1>
-<button onclick="window.location.href='/pickup_SpringBoot/personalCenter'">个人中心</button>
-<button onclick="window.location.href='/pickup_SpringBoot/announcement'">公告</button>
-<button onclick="window.location.href='/pickup_SpringBoot/submitApplication'">提交代取申请</button>
-<button onclick="window.location.href='/pickup_SpringBoot/viewPickupRecords'">查看代取记录</button>
+<button onclick="window.location.href='/pickup_SpringBoot/ordinaryUser/personalCenter'">个人中心</button>
+<button onclick="window.location.href='/pickup_SpringBoot/ordinaryUser/announcement'">公告</button>
+<button onclick="window.location.href='/pickup_SpringBoot/ordinaryUser/submitApplication'">提交代取申请</button>
+<button onclick="window.location.href='/pickup_SpringBoot/ordinaryUser/viewPickupRecords'">查看代取记录</button>
 <!-- 修改快递状态跟踪按钮的点击逻辑 -->
 <button onclick="checkRoleForTrack()">快递状态跟踪</button>
-<button onclick="window.location.href='/pickup_SpringBoot/notification'">通知</button>
-<button onclick="window.location.href='/pickup_SpringBoot/feedback'">评价与反馈</button>
+<button onclick="window.location.href='/pickup_SpringBoot/ordinaryUser/notification'">通知</button>
+<button onclick="window.location.href='/pickup_SpringBoot/ordinaryUser/feedback'">评价与反馈</button>
 
 <script>
     function checkRoleForTrack() {
@@ -35,7 +35,7 @@
             return;
         }
         // 非普通用户正常跳转
-        window.location.href = '/pickup_SpringBoot/trackPackageStatus';
+        window.location.href = '/pickup_SpringBoot/ordinaryUser/trackPackageStatus';
     }
 </script>
 
