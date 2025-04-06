@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>公告管理系统</title>
+    <style>
+        .container {
+            width: 800px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .btn {
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        .btn-edit {
+            background-color: #2196F3;
+        }
+        .btn-delete {
+            background-color: #f44336;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="section">
+        <h2>公告展示</h2>
+        <table id="announcementTable">
+            <thead>
+            <tr>
+                <th>公告ID</th>
+                <th>标题</th>
+                <th>内容</th>
+                <th>发布时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="announcementBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>新增公告</h2>
+        <form id="addAnnouncementForm">
+            <label for="title">标题：</label>
+            <input type="text" id="title" required>
+
+            <label for="content">内容：</label>
+            <textarea id="content" required></textarea>
+
+            <button type="submit">提交新增</button>
+        </form>
+    </div>
+</div>
+<!--todo:按页展示，每页展示五条，顺序是优先展示最新的公告。
+        对于公告每列限制宽度大小，同时将公告展示这一块整体的宽度大小不用限制，直接占满整个屏幕即可-->
+<script>
+    // 获取公告列表
+    function fetchAnnouncements() {
+        fetch('/pickup_SpringBoot/adminAnnouncement')
+            .then(response => response.json())
+            .then(data => {
+                const body = document.getElementById('announcementBody');
+                body.innerHTML = '';
+                data.forEach(announcement => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${announcement.announcement_id}</td>
+                        <td>${announcement.title}</td>
+                        <td>${announcement.content}</td>
+                        <td>${new Date(announcement.publish_time).toLocaleString()}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editAnnouncement(${announcement.announcement_id}, '${announcement.title}', '${announcement.content}')">修改</button>
+                            <button class="btn btn-delete" onclick="deleteAnnouncement(${announcement.announcement_id})">删除</button>
+                        </td>
+                    `;
+                    body.appendChild(tr);
+                });
+            })
+            .catch(error => console.error('获取公告失败:', error));
+    }
+
+    // 新增公告
+    document.getElementById('addAnnouncementForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        fetch('/pickup_SpringBoot/adminAnnouncement', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title,
+                content,
+                publish_time: new Date().toISOString()
+            })
+        })
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+                fetchAnnouncements();
+                document.getElementById('addAnnouncementForm').reset();
+            })
+            .catch(error => console.error('新增公告失败:', error));
+    });
+
+    // 修改公告
+    function editAnnouncement(announcementId, title, content) {
+        const newTitle = prompt('请输入新标题', title);
+        const newContent = prompt('请输入新内容', content);
+        if (newTitle && newContent) {
+            fetch('/pickup_SpringBoot/adminAnnouncement', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    announcement_id: announcementId,
+                    title: newTitle,
+                    content: newContent,
+                    publish_time: new Date().toISOString()
+                })
+            })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message);
+                    fetchAnnouncements();
+                })
+                .catch(error => console.error('修改公告失败:', error));
+        }
+    }
+
+    // 删除公告
+    function deleteAnnouncement(announcementId) {
+        if (confirm('确认删除该公告？')) {
+            fetch(`/pickup_SpringBoot/adminAnnouncement/${announcementId}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message);
+                    fetchAnnouncements();
+                })
+                .catch(error => console.error('删除公告失败:', error));
+        }
+    }
+
+    // 初始化加载公告
+    fetchAnnouncements();
+</script>
+</body>
+</html>

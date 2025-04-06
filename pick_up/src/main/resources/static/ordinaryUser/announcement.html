@@ -23,7 +23,7 @@
 <div id="announcementList"></div>
 <script>
     console.log('开始请求公告数据...');
-    fetch('/pickup_SpringBoot/announcements')
+    fetch('/pickup_SpringBoot/ordinaryUserAnnouncement/announcements')
         .then(response => {
             if (!response.ok) {
                 console.error('网络请求失败，状态码:', response.status);

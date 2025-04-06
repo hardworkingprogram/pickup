@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.admin.AdminAnnouncementMapper">
+    <select id="getAllAnnouncements" resultType="org.example.pojo.Announcement">
+        SELECT announcement_id, title, content, publish_time
+        FROM announcements
+        ORDER BY publish_time DESC
+    </select>
+    <select id="getAnnouncementById" resultType="org.example.pojo.Announcement">
+        SELECT announcement_id, title, content, publish_time
+        FROM announcements
+        WHERE announcement_id = #{announcement_id}
+    </select>
+    <insert id="insertAnnouncement" parameterType="org.example.pojo.Announcement">
+        INSERT INTO announcements (title, content, publish_time)
+        VALUES (#{title}, #{content}, #{publish_time})
+    </insert>
+    <update id="updateAnnouncement" parameterType="org.example.pojo.Announcement">
+        UPDATE announcements
+        SET title = #{title},
+        content = #{content},
+        publish_time = #{publish_time}
+        WHERE announcement_id = #{announcement_id}
+    </update>
+    <delete id="deleteAnnouncement" parameterType="int">
+        DELETE FROM announcements
+        WHERE announcement_id = #{announcement_id}
+    </delete>
+</mapper>
