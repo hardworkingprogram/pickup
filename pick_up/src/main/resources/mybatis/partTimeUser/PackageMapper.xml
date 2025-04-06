@@ -3,15 +3,23 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.mapper.partTimeUser.PackageMapper">
-<!--    todo:其实这里插入包裹信息应该是管理员的任务吧-->
+
     <insert id="insertPackage" parameterType="org.example.pojo.Package">
         INSERT INTO packages (express_company, tracking_number, recipient_id, status, arrival_time, pickup_time, pickup_user_id)
         VALUES (#{expressCompany}, #{trackingNumber}, #{recipientId}, #{status}, #{arrivalTime}, #{pickupTime}, #{pickupUserId})
     </insert>
 
-    <select id="getPackageById" resultType="org.example.pojo.Package">
-        SELECT * FROM packages WHERE package_id = #{packageId}
-    </select>
+    <update id="updatePackage" parameterType="org.example.pojo.Package">
+        UPDATE packages
+        SET express_company = #{expressCompany},
+            tracking_number = #{trackingNumber},
+            recipient_id = #{recipientId},
+            status = #{status},
+            arrival_time = #{arrivalTime},
+            pickup_time = #{pickupTime},
+            pickup_user_id = #{pickupUserId}
+        WHERE package_id = #{packageId}
+    </update>
 
     <update id="updatePackageStatus" parameterType="map">
         UPDATE packages
@@ -19,7 +27,16 @@
         WHERE package_id = #{packageId}
     </update>
 
+    <delete id="deletePackage" parameterType="int">
+        DELETE FROM packages WHERE package_id = #{packageId}
+    </delete>
+
     <select id="getAllPackages" resultType="org.example.pojo.Package">
         SELECT * FROM packages
     </select>
+
+    <select id="getPackageById" resultType="org.example.pojo.Package">
+        SELECT * FROM packages WHERE package_id = #{packageId}
+    </select>
+
 </mapper>

@@ -20,7 +20,7 @@ public class PackageController {
     public String insertPackage(@RequestBody Package pkg) {
         // 设置默认状态和到达时间
         pkg.setStatus("到达快递点");
-        pkg.setArrivalTime(new Date());
+        pkg.setArrival_time(new Date());
 
         int result = packageService.insertPackage(pkg);
         if (result > 0) {
