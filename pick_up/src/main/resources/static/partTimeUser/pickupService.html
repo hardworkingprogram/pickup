@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>代取服务</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>代取服务</h1>
+<button type="button" onclick="viewPickupApplications()">查看并确认用户的代取申请</button>
+<div id="pickupApplicationsList"></div>
+<button type="button" onclick="updatePickupRecord()">更新代取记录</button>
+<script>
+    function viewPickupApplications() {
+        const pickupUserId = sessionStorage.getItem('pickupUserId');
+        if (!pickupUserId) {
+            alert('请先登录');
+            return;
+        }
+        fetch('/pickup_SpringBoot/partTimeUser/getPickupApplications')
+            .then(response => response.json())
+            .then(data => {
+                const pickupApplicationsList = document.getElementById('pickupApplicationsList');
+                pickupApplicationsList.innerHTML = '';
+                data.forEach(application => {
+                    const div = document.createElement('div');
+                    div.textContent = '申请ID: ' + application.application_id +
+                        ', 包裹ID: ' + application.package_id +
+                        ', 代取时间: ' + new Date(application.pickup_time).toLocaleString() +
+                        ', 代取地点: ' + application.pickup_location +
+                        ', 状态: ' + application.status;
+                    const confirmButton = document.createElement('button');
+                    confirmButton.textContent = '确认接受';
+                    confirmButton.onclick = function () {
+                        confirmPickupApplication(application.application_id);
+                    };
+                    div.appendChild(confirmButton);
+                    pickupApplicationsList.appendChild(div);
+                });
+            });
+    }
+
+    function confirmPickupApplication(applicationId) {
+        fetch('/pickup_SpringBoot/partTimeUser/confirmPickupApplication?applicationId=' + applicationId)
+            .then(response => response.text())
+            .then(message => alert(message));
+    }
+
+    function updatePickupRecord() {
+        const applicationId = prompt('请输入代取申请ID');
+        const pickupTime = prompt('请输入代取时间');
+        const pickupPerson = prompt('请输入代取人');
+        const recipient = prompt('请输入领取人');
+        const data = {
+            applicationId: applicationId,
+            pickupTime: pickupTime,
+            pickupPerson: pickupPerson,
+            recipient: recipient
+        };
+        fetch('/pickup_SpringBoot/partTimeUser/updatePickupRecord', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(message => alert(message));
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.partTimeUser.PartTimePickupUserMapper">
+    <select id="getPartTimeUserById" resultType="org.example.pojo.PartTimePickupUser">
+        SELECT * FROM part_time_pickup_users WHERE pickup_user_id = #{pickup_user_id}
+    </select>
+    <select id="selectUserByPhoneAndPassword" resultType="org.example.pojo.PartTimePickupUser">
+        SELECT * FROM part_time_pickup_users WHERE phone_number = #{phone_number} AND password = #{password}
+    </select>
+</mapper>

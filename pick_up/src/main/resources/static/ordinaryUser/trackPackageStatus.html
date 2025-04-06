@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>快递状态跟踪</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>快递状态跟踪</h1>
+<form id="updateStatusForm">
+    <label for="packageId">包裹ID:</label>
+    <input type="text" id="packageId" name="packageId"><br>
+    <label for="status">状态:</label>
+    <select id="status" name="status">
+        <option value="到达快递点">到达快递点</option>
+        <option value="代取中">代取中</option>
+        <option value="已领取">已领取</option>
+    </select><br>
+    <button type="button" onclick="updatePackageStatus()">更新状态</button>
+</form>
+<script>
+    function updatePackageStatus() {
+        const packageId = document.getElementById('packageId').value;
+        const status = document.getElementById('status').value;
+        fetch('/pickup_SpringBoot/expressPickup/updatePackageStatus?packageId=' + packageId +
+            '&status=' + status)
+            .then(response => response.text())
+            .then(message => alert(message));
+    }
+</script>
+</body>
+</html>

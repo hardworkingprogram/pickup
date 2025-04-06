@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.ordinaryUser.UserMapper">
+    <select id="selectAllUsers" resultType="org.example.pojo.User">
+        select * from ordinary_users
+    </select>
+    <select id="selectUserByPhoneAndPassword" resultType="org.example.pojo.User">
+        select * from ordinary_users where phone_number = #{phone_number} and password = #{password}
+    </select>
+    <select id="selectUserById" resultType="org.example.pojo.User">
+        select * from ordinary_users where user_id = #{user_id}
+    </select>
+<!--    todo:这里修改更新语句为根据当前登录者的id对其信息进行修改，而不是根据手机号-->
+    <update id="updateUserInfo" parameterType="org.example.pojo.User">
+        update ordinary_users
+        set name = #{name},
+        nickname = #{nickname},
+        contact_info = #{contact_info},
+        address = #{address}
+        where user_id = #{user_id}
+    </update>
+</mapper>

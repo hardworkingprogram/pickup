@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提交代取申请</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>提交代取申请</h1>
+<form id="submitApplicationForm">
+<!--    todo:提交申请表单的时间前后端不一致-->
+<!--    <label for="userId">用户ID:</label>-->
+<!--    <input type="text" id="userId" name="userId" hidden><br>-->
+<!--    todo:增加录入快递公司、运单号等信息的功能；-->
+    <label for="packageId">包裹ID:</label>
+    <input type="text" id="packageId" name="packageId"><br>
+    <label for="pickupTime">代取时间:</label>
+    <input type="datetime-local" id="pickupTime" name="pickupTime"><br>
+    <label for="pickupLocation">代取地点:</label>
+    <input type="text" id="pickupLocation" name="pickupLocation"><br>
+    <button type="button" onclick="submitApplication()">提交申请</button>
+</form>
+<script>
+    function submitApplication() {
+        const userId = sessionStorage.getItem('userId'); // 从 sessionStorage 获取用户 ID
+        const packageId = document.getElementById('packageId').value;
+        const pickupTime = document.getElementById('pickupTime').value;
+        const pickupLocation = document.getElementById('pickupLocation').value;
+        const data = {
+            user_id: userId,
+            package_id: packageId,
+            pickup_time: pickupTime,
+            pickup_location: pickupLocation
+        };
+        fetch('/pickup_SpringBoot/expressPickup/submitApplication', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(message => alert(message));
+    }
+</script>
+</body>
+</html>

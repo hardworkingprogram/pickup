@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>兼职用户个人中心</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            width: 300px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>兼职用户个人中心</h1>
+<form id="personalInfoForm">
+    <label for="phone_number">手机号码:</label>
+    <input type="text" id="phone_number" name="phone_number" readonly><br>
+    <label for="name">姓名:</label>
+    <input type="text" id="name" name="name" readonly><br>
+    <label for="nickname">昵称:</label>
+    <input type="text" id="nickname" name="nickname" readonly><br>
+    <label for="contact_info">联系方式:</label>
+    <input type="text" id="contact_info" name="contact_info" readonly><br>
+    <label for="score">评分:</label>
+    <input type="text" id="score" name="score" readonly><br>
+    <button type="button" onclick="loadPersonalInfo()">查看信息</button>
+</form>
+<script>
+    function loadPersonalInfo() {
+        const pickupUserId = sessionStorage.getItem('pickupUserId');
+        if (!pickupUserId) {
+            alert('请先登录');
+            return;
+        }
+        fetch('/pickup_SpringBoot/partTimeUser/getPersonalInfo?pickup_user_id=' + pickupUserId)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('phone_number').value = data.phone_number;
+                document.getElementById('name').value = data.name;
+                document.getElementById('nickname').value = data.nickname;
+                document.getElementById('contact_info').value = data.contact_info;
+                document.getElementById('score').value = data.score;
+            });
+    }
+</script>
+</body>
+</html>

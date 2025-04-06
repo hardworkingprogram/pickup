@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>兼职用户面板</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<h1>欢迎登录，兼职用户</h1>
+<button onclick="goToPersonalCenter()">个人中心（评分）</button>
+<button onclick="goToInputPackageInfo()">录入包裹信息</button>
+<button onclick="goToUpdatePackageStatus()">更新包裹状态</button>
+<button onclick="goToPickupService()">代取服务</button>
+<button onclick="goToNotification()">通知提醒</button>
+
+<script>
+    function goToPersonalCenter() {
+        window.location.href = '/pickup_SpringBoot/partTimeUser/personalCenter.html';
+    }
+
+    function goToInputPackageInfo() {
+        window.location.href = '/pickup_SpringBoot/partTimeUser/inputPackageInfo.html';
+    }
+
+    function goToUpdatePackageStatus() {
+        window.location.href = '/pickup_SpringBoot/partTimeUser/updatePackageStatus.html';
+    }
+
+    function goToPickupService() {
+        window.location.href = '/pickup_SpringBoot/partTimeUser/pickupService.html';
+    }
+
+    function goToNotification() {
+        window.location.href = '/pickup_SpringBoot/partTimeUser/notification.html';
+    }
+</script>
+</body>
+</html>

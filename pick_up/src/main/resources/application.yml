@@ -12,5 +12,5 @@ spring:
 
 
 mybatis:
-  type-aliases-package: com.example.pojo
-  mapper-locations: classpath:mybatis/*.xml
+  type-aliases-package: org.example.pojo
+  mapper-locations: classpath:mybatis/*/*.xml

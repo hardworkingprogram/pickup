@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>快递代取</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+        .function-container {
+            display: flex;
+            gap: 250px;
+        }
+    </style>
+</head>
+<body>
+<h1>快递代取</h1>
+<div class="function-container">
+    <div>
+        <h2>提交代取申请</h2>
+        <form id="submitApplicationForm">
+            <label for="userId">用户ID:</label>
+            <input type="text" id="userId" name="userId"><br>
+            <label for="packageId">包裹ID:</label>
+            <input type="text" id="packageId" name="packageId"><br>
+            <label for="pickupTime">代取时间:</label>
+            <input type="datetime-local" id="pickupTime" name="pickupTime"><br>
+            <label for="pickupLocation">代取地点:</label>
+            <input type="text" id="pickupLocation" name="pickupLocation"><br>
+            <button type="button" onclick="submitApplication()">提交申请</button>
+        </form>
+    </div>
+    <div>
+        <h2>查看代取记录</h2>
+        <button type="button" onclick="getPickupRecords()">查看记录</button>
+        <div id="pickupRecordsList"></div>
+    </div>
+    <div>
+        <h2>快递状态跟踪</h2>
+        <form id="updateStatusForm">
+            <label for="packageId">包裹ID:</label>
+            <input type="text" id="packageId" name="packageId"><br>
+            <label for="status">状态:</label>
+            <select id="status" name="status">
+                <option value="到达快递点">到达快递点</option>
+                <option value="代取中">代取中</option>
+                <option value="已领取">已领取</option>
+            </select><br>
+            <button type="button" onclick="updatePackageStatus()">更新状态</button>
+        </form>
+    </div>
+</div>
+<script>
+    function submitApplication() {
+        const userId = document.getElementById('userId').value;
+        const packageId = document.getElementById('packageId').value;
+        const pickupTime = document.getElementById('pickupTime').value;
+        const pickupLocation = document.getElementById('pickupLocation').value;
+        const data = {
+            user_id: userId,
+            package_id: packageId,
+            pickup_time: pickupTime,
+            pickup_location: pickupLocation
+        };
+        fetch('/pickup_SpringBoot/expressPickup/submitApplication', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(message => alert(message));
+    }
+
+    function getPickupRecords() {
+        const userId = sessionStorage.getItem('userId'); // 从 sessionStorage 获取用户 ID
+        if (!userId) {
+            alert('请先登录');
+            return;
+        }
+        fetch('/pickup_SpringBoot/expressPickup/getPickupRecords?userId=' + userId)
+            .then(response => response.json())
+            .then(data => {
+                const pickupRecordsList = document.getElementById('pickupRecordsList');
+                pickupRecordsList.innerHTML = '';
+                data.forEach(record => {
+                    const div = document.createElement('div');
+                    div.textContent = '申请ID: ' + record.application_id +
+                        ', 包裹ID: ' + record.package_id +
+                        ', 代取时间: ' + new Date(record.pickup_time).toLocaleString() +
+                        ', 代取地点: ' + record.pickup_location +
+                        ', 状态: ' + record.status;
+                    pickupRecordsList.appendChild(div);
+                });
+            });
+    }
+
+    function updatePackageStatus() {
+        const role = sessionStorage.getItem('role');
+        if (role !== 'part_time_user' && role !== 'admin') {
+            alert('只有兼职用户和管理员可以进行快递状态跟踪操作');
+            return;
+        }
+        const packageId = document.getElementById('packageId').value;
+        const status = document.getElementById('status').value;
+        fetch('/pickup_SpringBoot/expressPickup/updatePackageStatus?packageId=' + packageId +
+            '&status=' + status)
+            .then(response => response.text())
+            .then(message => alert(message));
+    }
+</script>
+</body>
+</html>

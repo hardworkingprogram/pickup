@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.ordinaryUser.PickupApplicationMapper">
+    <insert id="insertPickupApplication" parameterType="org.example.pojo.PickupApplication">
+        INSERT INTO pickup_applications (user_id, package_id, pickup_time, pickup_location, status)
+        VALUES (#{user_id}, #{package_id}, #{pickup_time}, #{pickup_location}, #{status})
+    </insert>
+    <!-- 根据用户ID查询代取记录 -->
+    <select id="getPickupApplicationsByUserId" resultType="org.example.pojo.PickupApplication">
+        SELECT * FROM pickup_applications
+        WHERE user_id = #{userId}
+    </select>
+</mapper>
