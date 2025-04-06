@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.admin.AdminMapper">
+    <select id="selectAdminByUsername" resultType="org.example.pojo.Admin">
+        SELECT * FROM administrators WHERE username = #{username}
+    </select>
+
+    <!-- 新增：查询所有普通用户 -->
+    <select id="selectAllOrdinaryUsers" resultType="java.util.Map">
+        SELECT * FROM ordinary_users
+    </select>
+
+    <!-- 新增：查询所有兼职代取用户 -->
+    <select id="selectAllPartTimeUsers" resultType="java.util.Map">
+        SELECT * FROM part_time_pickup_users
+    </select>
+
+    <!-- 新增：修改用户信息 -->
+    <update id="updateUserInfo">
+        <choose>
+            <when test="tableName == 'ordinary_users'">
+                UPDATE ${tableName}
+                SET ${field} = #{value}
+                WHERE user_id = #{userId}
+            </when>
+            <when test="tableName == 'part_time_pickup_users'">
+                UPDATE ${tableName}
+                SET ${field} = #{value}
+                WHERE pickup_user_id = #{userId}
+            </when>
+        </choose>
+    </update>
+
+    <!-- 新增：冻结用户账号 -->
+    <update id="freezeUser">
+        <choose>
+            <when test="tableName == 'ordinary_users'">
+                UPDATE ${tableName}
+                SET account_status = 'frozen'
+                WHERE user_id = #{userId}
+            </when>
+            <when test="tableName == 'part_time_pickup_users'">
+                UPDATE ${tableName}
+                SET account_status = 'frozen'
+                WHERE pickup_user_id = #{userId}
+            </when>
+        </choose>
+    </update>
+
+    <!-- 新增：解冻用户账号 -->
+    <update id="unfreezeUser">
+        <choose>
+            <when test="tableName == 'ordinary_users'">
+                UPDATE ${tableName}
+                SET account_status = 'active'
+                WHERE user_id = #{userId}
+            </when>
+            <when test="tableName == 'part_time_pickup_users'">
+                UPDATE ${tableName}
+                SET account_status = 'active'
+                WHERE pickup_user_id = #{userId}
+            </when>
+        </choose>
+    </update>
+</mapper>

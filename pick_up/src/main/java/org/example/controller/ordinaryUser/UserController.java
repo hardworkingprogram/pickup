@@ -27,12 +27,6 @@ public class UserController {
         User user = null;
         if ("ordinary_user".equals(role)) {
             user = userService.login(phone_number, password);
-        } else if ("part_time_user".equals(role)) {
-            // 这里需要实现兼职用户的登录逻辑，假设存在 PartTimeUserService
-            // user = partTimeUserService.login(phone_number, password);
-        } else if ("admin".equals(role)) {
-            // 这里需要实现管理员的登录逻辑，假设存在 AdminService
-            // user = adminService.login(phone_number, password);
         }
         //todo:登录功能session需要保存用户的id以便后续操作
         if (user != null) {

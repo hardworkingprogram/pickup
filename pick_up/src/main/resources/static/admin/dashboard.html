@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员面板</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<h1>欢迎登录，管理员</h1>
+<button onclick="goToUserManagement()">用户管理</button>
+<button onclick="goToPartTimeUserManagement()">兼职用户管理</button>
+<button onclick="goToAnnouncementManagement()">公告资讯管理</button>
+<button onclick="goToPickupTaskManagement()">代拿任务管理</button>
+<button onclick="goToExpressInfoManagement()">快递信息管理</button>
+<button onclick="goToFeedbackManagement()">反馈管理</button>
+<button onclick="goToVisualStatistics()">可视化统计</button>
+
+<script>
+    function goToUserManagement() {
+        window.location.href = '/pickup_SpringBoot/admin/ordinaryUserManagement.html';
+    }
+
+    function goToPartTimeUserManagement() {
+        window.location.href = '/pickup_SpringBoot/admin/partTimeUserManagement.html';
+    }
+
+    function goToAnnouncementManagement() {
+        window.location.href = '/pickup_SpringBoot/admin/announcementManagement.html';
+    }
+
+    function goToPickupTaskManagement() {
+        window.location.href = '/pickup_SpringBoot/admin/pickupTaskManagement.html';
+    }
+
+    function goToExpressInfoManagement() {
+        window.location.href = '/pickup_SpringBoot/admin/expressInfoManagement.html';
+    }
+
+    function goToFeedbackManagement() {
+        window.location.href = '/pickup_SpringBoot/admin/feedbackManagement.html';
+    }
+
+    function goToVisualStatistics() {
+        window.location.href = '/pickup_SpringBoot/admin/visualStatistics.html';
+    }
+</script>
+</body>
+</html>
