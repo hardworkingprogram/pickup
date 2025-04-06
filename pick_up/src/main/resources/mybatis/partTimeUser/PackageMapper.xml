@@ -4,27 +4,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.mapper.partTimeUser.PackageMapper">
 
+<!--    todo:目前插入的当前时间是有问题的-->
     <insert id="insertPackage" parameterType="org.example.pojo.Package">
         INSERT INTO packages (express_company, tracking_number, recipient_id, status, arrival_time, pickup_time, pickup_user_id)
-        VALUES (#{expressCompany}, #{trackingNumber}, #{recipientId}, #{status}, #{arrivalTime}, #{pickupTime}, #{pickupUserId})
+        VALUES (#{express_company}, #{tracking_number}, #{recipient_id}, #{status}, #{arrival_time}, #{pickup_time}, #{pickup_user_id})
     </insert>
 
     <update id="updatePackage" parameterType="org.example.pojo.Package">
         UPDATE packages
-        SET express_company = #{expressCompany},
-            tracking_number = #{trackingNumber},
-            recipient_id = #{recipientId},
+        SET
+            express_company = #{express_company},
+            tracking_number = #{tracking_number},
+            recipient_id = #{recipient_id},
             status = #{status},
-            arrival_time = #{arrivalTime},
-            pickup_time = #{pickupTime},
-            pickup_user_id = #{pickupUserId}
-        WHERE package_id = #{packageId}
-    </update>
-
-    <update id="updatePackageStatus" parameterType="map">
-        UPDATE packages
-        SET status = #{status}
-        WHERE package_id = #{packageId}
+            arrival_time = #{arrival_time},
+            pickup_time = #{pickup_time},
+            pickup_user_id = #{pickup_user_id}
+        WHERE package_id = #{package_id}
     </update>
 
     <delete id="deletePackage" parameterType="int">
@@ -33,10 +29,6 @@
 
     <select id="getAllPackages" resultType="org.example.pojo.Package">
         SELECT * FROM packages
-    </select>
-
-    <select id="getPackageById" resultType="org.example.pojo.Package">
-        SELECT * FROM packages WHERE package_id = #{packageId}
     </select>
 
 </mapper>

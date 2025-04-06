@@ -5,12 +5,12 @@ import org.example.service.admin.AdminPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/admin/packages")
 public class AdminPackageController {
-
     @Autowired
     private AdminPackageService adminPackageService;
 
@@ -23,6 +23,12 @@ public class AdminPackageController {
     // 新增快递信息
     @PostMapping
     public String addPackage(@RequestBody Package pkg) {
+        // 设置默认值
+        pkg.setStatus("到达快递点");
+        pkg.setArrival_time(new Date());
+        pkg.setPickup_time(null);
+        pkg.setPickup_user_id(null);
+
         boolean success = adminPackageService.addPackage(pkg);
         if (success) {
             return "快递信息添加成功";

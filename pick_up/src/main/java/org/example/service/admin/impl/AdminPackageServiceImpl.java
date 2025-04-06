@@ -1,7 +1,7 @@
 package org.example.service.admin.impl;
 
-import org.example.mapper.partTimeUser.PackageMapper;
 import org.example.pojo.Package;
+import org.example.mapper.partTimeUser.PackageMapper;
 import org.example.service.admin.AdminPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,6 @@ import java.util.List;
 
 @Service
 public class AdminPackageServiceImpl implements AdminPackageService {
-
     @Autowired
     private PackageMapper packageMapper;
 
