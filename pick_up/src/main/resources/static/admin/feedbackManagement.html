@@ -1,85 +1,235 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
+    <meta charset="UTF-8">
     <title>投诉管理</title>
-    <link rel="stylesheet" href="/static/css/admin.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: '微软雅黑', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            padding: 25px;
+            background: #007bff;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .feedback-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .feedback-table th,
+        .feedback-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .feedback-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .status-handled { color: #28a745; }
+        .status-unhandled { color: #dc3545; }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .handle-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        .handle-btn:hover { background: #0056b3; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        .modal-btn-group {
+            text-align: right;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .confirm-btn { background: #28a745; color: white; }
+        .cancel-btn { background: #6c757d; color: white; }
+    </style>
 </head>
 <body>
-<h1>投诉管理</h1>
-<table id="complaintTable">
-    <thead>
-    <tr>
-        <th>投诉ID</th>
-        <th>用户ID</th>
-        <th>包裹ID</th>
-        <th>满意度</th>
-        <th>反馈内容</th>
-        <th>处理状态</th>
-        <th>处理操作</th>
-    </tr>
-    </thead>
-    <tbody id="complaintList"></tbody>
-</table>
+<div class="container">
+    <h1>投诉管理</h1>
 
-<!-- 处理模态框 -->
-<div id="handlingModal" style="display: none;">
-    <textarea id="handlingContent" placeholder="输入处理意见" rows="5" style="width: 300px;"></textarea>
-    <button onclick="handleComplaint()">确认处理</button>
-    <button onclick="closeModal()">取消</button>
+    <table class="feedback-table">
+        <thead>
+        <tr>
+            <th>投诉ID</th>
+            <th>用户ID</th>
+            <th>包裹ID</th>
+            <th>投诉内容</th>
+            <th>处理状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="complaintList">
+        <!-- 动态加载数据 -->
+        </tbody>
+    </table>
+
+    <!-- 处理弹窗 -->
+    <div class="modal" id="handleModal">
+        <div class="modal-content">
+            <h3>处理投诉 #<span id="complaintId"></span></h3>
+            <textarea id="handlingContent" placeholder="请输入处理意见..."></textarea>
+            <div class="modal-btn-group">
+                <button class="modal-btn cancel-btn" onclick="closeModal()">取消</button>
+                <button class="modal-btn confirm-btn" onclick="submitHandle()">确认处理</button>
+            </div>
+        </div>
+    </div>
 </div>
-
+<!--todo:可以优化的是，对于处理状态为已处理的，点击处理系统应提示已处理过，无需处理？-->
 <script>
+    let currentComplaintId = null;
     // 加载投诉列表
     function loadComplaints() {
-        fetch('/pickup_SpringBoot/admin/feedback/complaints')
+        fetch('/pickup_SpringBoot/admin/feedback/list')
             .then(res => res.json())
             .then(data => {
                 const tbody = document.getElementById('complaintList');
                 tbody.innerHTML = data.map(complaint => `
-                        <tr>
-                            <td>${complaint.evaluation_id}</td>
-                            <td>${complaint.user_id}</td>
-                            <td>${complaint.package_id}</td>
-                            <td>${complaint.satisfaction}分</td>
-                            <td>${complaint.feedback}</td>
-                            <td>${complaint.handling_status ? '已处理' : '未处理'}</td>
-                            <td><button onclick="openModal(${complaint.evaluation_id}, ${complaint.user_id}, ${complaint.package_id})">处理</button></td>
-                        </tr>
-                    `).join('');
-            });
+                <tr>
+                    <td>${complaint.evaluation_id}</td>
+                    <td>${complaint.user_id}</td>
+                    <td>${complaint.package_id}</td>
+                    <td>${complaint.feedback}</td>
+                    <td class="${complaint.status==='已处理' ? 'status-handled' : 'status-unhandled'}">
+                        ${complaint.status==='已处理' ? '已处理' : '未处理'}
+                    </td>
+                    <td>
+                        <button class="action-btn handle-btn"
+                                onclick="showHandleModal(
+                                    ${complaint.evaluation_id},
+                                    ${complaint.user_id},
+                                    ${complaint.package_id}
+                                )">
+                            处理
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            })
     }
 
-    // 打开处理模态框
-    function openModal(evaluationId, userId, packageId) {
-        window.evaluationId = evaluationId;
-        window.userId = userId;
-        window.packageId = packageId;
-        document.getElementById('handlingModal').style.display = 'block';
+    // 显示处理弹窗
+    function showHandleModal(evaluationId, userId, packageId) {
+        currentData = {
+            evaluation_id: evaluationId,
+            user_id: userId,
+            package_id: packageId
+        };
+        document.getElementById('complaintId').textContent = evaluationId;
+        document.getElementById('handleModal').style.display = 'block';
+    }
+
+    // 关闭弹窗
+    function closeModal() {
+        document.getElementById('handleModal').style.display = 'none';
+        document.getElementById('handlingContent').value = '';
+        currentComplaintId = null;
     }
 
     // 提交处理
-    function handleComplaint() {
-        const data = {
-            evaluationId: window.evaluationId,
-            userId: window.userId,
-            packageId: window.packageId,
-            handlingContent: document.getElementById('handlingContent').value
-        };
+    // 提交处理（支持纯文本响应）
+    async function submitHandle() {
+        const content = document.getElementById('handlingContent').value.trim();
+        if (!content) return alert('处理意见不能为空');
 
-        fetch('/pickup_SpringBoot/admin/feedback/handle', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(res => res.text())
-            .then(msg => {
-                alert(msg);
-                loadComplaints(); // 刷新列表
-                closeModal();
+        try {
+            const response = await fetch('/pickup_SpringBoot/admin/feedback/handle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    evaluation_id: currentData.evaluation_id,
+                    user_id: currentData.user_id,
+                    package_id: currentData.package_id,
+                    feedback: content  // 修正参数名
+                })
             });
-    }
 
-    function closeModal() {
-        document.getElementById('handlingModal').style.display = 'none';
+            // 优先尝试读取文本
+            const responseText = await response.text();
+
+            if (responseText === "处理成功") {
+                alert('操作成功');  // 按需求修改提示语
+                loadComplaints();
+                closeModal();
+            } else {
+                alert(`处理异常: ${responseText}`);
+            }
+
+        } catch (error) {
+            console.error('请求失败:', error);
+            alert('网络请求失败，请检查控制台');
+        }
     }
 
     // 初始化加载

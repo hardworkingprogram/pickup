@@ -9,6 +9,7 @@ public class Evaluation {
     private int satisfaction;
     private String feedback;
     private boolean is_complaint;
+    private String status;
 
     // 构造函数
     public Evaluation() {}
@@ -19,6 +20,7 @@ public class Evaluation {
         this.satisfaction = satisfaction;
         this.feedback = feedback;
         this.is_complaint = is_complaint;
+        this.status = "未处理";
     }
 
     // Getters 和 Setters
@@ -68,5 +70,13 @@ public class Evaluation {
 
     public void setIs_complaint(boolean is_complaint) {
         this.is_complaint = is_complaint;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
