@@ -24,6 +24,7 @@
             alert('请先登录');
             return;
         }
+        // todo:兼职用户需要实现的暂时未明确，所以功能还没实现
         fetch('/pickup_SpringBoot/partTimeUser/getNotifications?pickupUserId=' + pickupUserId)
             .then(response => response.json())
             .then(data => {

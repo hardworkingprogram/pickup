@@ -43,9 +43,9 @@
         const trackingNumber = document.getElementById('trackingNumber').value;
         const recipientId = document.getElementById('recipientId').value;
         const data = {
-            expressCompany: expressCompany,
-            trackingNumber: trackingNumber,
-            recipientId: recipientId
+            express_company: expressCompany,
+            tracking_number: trackingNumber,
+            recipient_id: recipientId
         };
         fetch('/pickup_SpringBoot/packages/insertPackage', {
             method: 'POST',

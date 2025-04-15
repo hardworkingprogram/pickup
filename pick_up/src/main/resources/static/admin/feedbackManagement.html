@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>投诉管理</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+<h1>投诉管理</h1>
+<table id="complaintTable">
+    <thead>
+    <tr>
+        <th>投诉ID</th>
+        <th>用户ID</th>
+        <th>包裹ID</th>
+        <th>满意度</th>
+        <th>反馈内容</th>
+        <th>处理状态</th>
+        <th>处理操作</th>
+    </tr>
+    </thead>
+    <tbody id="complaintList"></tbody>
+</table>
+
+<!-- 处理模态框 -->
+<div id="handlingModal" style="display: none;">
+    <textarea id="handlingContent" placeholder="输入处理意见" rows="5" style="width: 300px;"></textarea>
+    <button onclick="handleComplaint()">确认处理</button>
+    <button onclick="closeModal()">取消</button>
+</div>
+
+<script>
+    // 加载投诉列表
+    function loadComplaints() {
+        fetch('/pickup_SpringBoot/admin/feedback/complaints')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('complaintList');
+                tbody.innerHTML = data.map(complaint => `
+                        <tr>
+                            <td>${complaint.evaluation_id}</td>
+                            <td>${complaint.user_id}</td>
+                            <td>${complaint.package_id}</td>
+                            <td>${complaint.satisfaction}分</td>
+                            <td>${complaint.feedback}</td>
+                            <td>${complaint.handling_status ? '已处理' : '未处理'}</td>
+                            <td><button onclick="openModal(${complaint.evaluation_id}, ${complaint.user_id}, ${complaint.package_id})">处理</button></td>
+                        </tr>
+                    `).join('');
+            });
+    }
+
+    // 打开处理模态框
+    function openModal(evaluationId, userId, packageId) {
+        window.evaluationId = evaluationId;
+        window.userId = userId;
+        window.packageId = packageId;
+        document.getElementById('handlingModal').style.display = 'block';
+    }
+
+    // 提交处理
+    function handleComplaint() {
+        const data = {
+            evaluationId: window.evaluationId,
+            userId: window.userId,
+            packageId: window.packageId,
+            handlingContent: document.getElementById('handlingContent').value
+        };
+
+        fetch('/pickup_SpringBoot/admin/feedback/handle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(res => res.text())
+            .then(msg => {
+                alert(msg);
+                loadComplaints(); // 刷新列表
+                closeModal();
+            });
+    }
+
+    function closeModal() {
+        document.getElementById('handlingModal').style.display = 'none';
+    }
+
+    // 初始化加载
+    window.onload = loadComplaints;
+</script>
+</body>
+</html>

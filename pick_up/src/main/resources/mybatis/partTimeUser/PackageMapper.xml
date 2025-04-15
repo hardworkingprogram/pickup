@@ -23,6 +23,13 @@
         WHERE package_id = #{package_id}
     </update>
 
+    <update id="updatePackageStatus" parameterType="org.example.pojo.Package">
+        UPDATE packages
+        SET
+            status = #{status}
+        WHERE package_id = #{packageId}
+    </update>
+
     <delete id="deletePackage" parameterType="int">
         DELETE FROM packages WHERE package_id = #{packageId}
     </delete>
