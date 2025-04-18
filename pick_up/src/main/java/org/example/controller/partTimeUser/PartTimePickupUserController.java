@@ -2,6 +2,7 @@ package org.example.controller.partTimeUser;
 
 
 import org.example.pojo.PartTimePickupUser;
+import org.example.pojo.PickupApplication;
 import org.example.pojo.User;
 import org.example.service.partTimeUser.PartTimePickupUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -62,5 +64,12 @@ public class PartTimePickupUserController {
             result.put("score", user.getScore());
         }
         return result;
+    }
+
+    //获取所有代取申请列表
+    @GetMapping("/getAllApplications")
+    @ResponseBody
+    public List<PickupApplication> getAllApplications() {
+        return partTimePickupUserService.getAllApplications();
     }
 }

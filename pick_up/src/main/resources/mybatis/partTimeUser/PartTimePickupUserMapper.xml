@@ -9,4 +9,9 @@
     <select id="selectUserByPhoneAndPassword" resultType="org.example.pojo.PartTimePickupUser">
         SELECT * FROM part_time_pickup_users WHERE phone_number = #{phone_number} AND password = #{password}
     </select>
+    <select id="selectUnassignedTasks" resultType="org.example.pojo.PickupApplication">
+        SELECT pa.*
+        FROM pickup_applications pa
+        WHERE pa.status = '待处理'
+    </select>
 </mapper>

@@ -1,79 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>代取服务</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>浏览器精确定位</title>
     <style>
+        /* 新增布局样式 */
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        button {
-            padding: 10px 20px;
+        #map-container {
+            flex: 1;
+            height: 50vh;
+            min-height: 300px;
+        }
+        /* 定位信息框样式（保持与原图一致） */
+        .info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 400px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 999;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* 下半部容器样式（保持留空） */
+        #info-container {
+            height: 40vh;
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #eee;
+            overflow-y: auto;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .orders-table th {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 2px solid #e4e4e4;
+            color: #666;
+        }
+
+        .orders-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
         }
     </style>
 </head>
 <body>
-<h1>代取服务</h1>
-<button type="button" onclick="viewPickupApplications()">查看并确认用户的代取申请</button>
-<div id="pickupApplicationsList"></div>
-<button type="button" onclick="updatePickupRecord()">更新代取记录</button>
+<!-- 上半部分：地图容器 -->
+<div id="map-container">
+    <div id="container" style="width:100%;height:100%;"></div>
+</div>
+
+<!-- 下半部分：信息展示 -->
+<div id="info-container">
+    <h3 style="margin-bottom:15px;">快递代取申请列表</h3>
+    <table class="orders-table">
+        <thead>
+        <tr>
+            <th>申请ID</th>
+            <th>用户ID</th>
+            <th>包裹ID</th>
+            <th>取件时间</th>
+            <th>取件地点</th>
+            <th>状态</th>
+        </tr>
+        </thead>
+        <tbody id="orders-body">
+        <tr>
+            <td colspan="6" style="text-align:center;padding:30px;">数据加载中...</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 <script>
-    function viewPickupApplications() {
-        const pickupUserId = sessionStorage.getItem('pickupUserId');
-        if (!pickupUserId) {
-            alert('请先登录');
-            return;
-        }
-        fetch('/pickup_SpringBoot/partTimeUser/getPickupApplications')
-            .then(response => response.json())
-            .then(data => {
-                const pickupApplicationsList = document.getElementById('pickupApplicationsList');
-                pickupApplicationsList.innerHTML = '';
-                data.forEach(application => {
-                    const div = document.createElement('div');
-                    div.textContent = '申请ID: ' + application.application_id +
-                        ', 包裹ID: ' + application.package_id +
-                        ', 代取时间: ' + new Date(application.pickup_time).toLocaleString() +
-                        ', 代取地点: ' + application.pickup_location +
-                        ', 状态: ' + application.status;
-                    const confirmButton = document.createElement('button');
-                    confirmButton.textContent = '确认接受';
-                    confirmButton.onclick = function () {
-                        confirmPickupApplication(application.application_id);
-                    };
-                    div.appendChild(confirmButton);
-                    pickupApplicationsList.appendChild(div);
-                });
-            });
-    }
-
-    function confirmPickupApplication(applicationId) {
-        fetch('/pickup_SpringBoot/partTimeUser/confirmPickupApplication?applicationId=' + applicationId)
-            .then(response => response.text())
-            .then(message => alert(message));
-    }
-
-    function updatePickupRecord() {
-        const applicationId = prompt('请输入代取申请ID');
-        const pickupTime = prompt('请输入代取时间');
-        const pickupPerson = prompt('请输入代取人');
-        const recipient = prompt('请输入领取人');
-        const data = {
-            applicationId: applicationId,
-            pickupTime: pickupTime,
-            pickupPerson: pickupPerson,
-            recipient: recipient
-        };
-        fetch('/pickup_SpringBoot/partTimeUser/updatePickupRecord', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+    // ========== 订单数据获取 ==========
+    fetch('/pickup_SpringBoot/partTimeUser/getAllApplications')
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('orders-body');
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td>${item.application_id}</td>
+                    <td>${item.user_id}</td>
+                    <td>${item.package_id}</td>
+                    <td>${item.pickup_time}</td>
+                    <td>${item.pickup_location}</td>
+                    <td>
+                        <span class="status-tag ${getStatusClass(item.status)}">
+                            ${item.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
         })
-            .then(response => response.text())
-            .then(message => alert(message));
+        .catch(error => {
+            document.getElementById('orders-body').innerHTML = `
+                <tr>
+                    <td colspan="6" style="color:#dc3545;text-align:center;">
+                        数据加载失败：${error.message}
+                    </td>
+                </tr>
+            `;
+        });
+
+    function getStatusClass(status) {
+        return status === '待处理' ? 'status-pending' : 'status-completed';
+    }
+
+    /* ========== 已有的地图代码完全保留 ========== */
+</script>
+
+<script type="text/javascript">
+    window._AMapSecurityConfig = {
+        securityJsCode:'f7e7f4ffdf8602e536f4381f9e90e587',
+    }
+</script>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=3402d0500577e98166c8d743057f82cf"></script>
+<script type="text/javascript">
+    var map = new AMap.Map('container', {
+        zoom:12,
+        resizeEnable: true
+    });
+
+    AMap.plugin('AMap.Geolocation', function() {
+        var geolocation = new AMap.Geolocation({
+            enableHighAccuracy: true,
+            timeout: 10000,
+            buttonPosition:'RB',
+            buttonOffset: new AMap.Pixel(10, 20),
+            zoomToAccuracy: true,
+            needAddress: true,
+        });
+        map.addControl(geolocation);
+        geolocation.getCurrentPosition(function(status,result){
+            if(status=='complete'){
+                onComplete(result)
+                console.log(result);
+                console.log(position_ie);
+            }else{
+                onError(result)
+            }
+        });
+    });
+
+    function onComplete(data) {
+        document.getElementById('status').innerHTML='定位成功'
+        var str = [];
+        str.push('定位结果：' + data.position);
+        str.push('定位类别：' + data.location_type);
+        var position_de = data.formattedAddress;
+        position_ie = data.formattedAddress;
+        str.push('位置：' + position_de);
+        str.push('详细信息：' + data.message);
+        if(data.accuracy){
+            str.push('精度：' + data.accuracy + ' 米');
+        }
+        str.push('是否经过偏移：' + (data.isConverted ? '是' : '否'));
+        document.getElementById('result').innerHTML = str.join('<br>');
+    }
+
+    function onError(data) {
+        document.getElementById('status').innerHTML='定位失败'
+        document.getElementById('result').innerHTML = '失败原因排查信息:'+data.message;
     }
 </script>
 </body>
