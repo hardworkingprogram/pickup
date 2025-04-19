@@ -4,6 +4,7 @@ package org.example.controller.partTimeUser;
 import org.example.pojo.PartTimePickupUser;
 import org.example.pojo.PickupApplication;
 import org.example.pojo.User;
+import org.example.service.ordinaryUser.NotificationService;
 import org.example.service.partTimeUser.PartTimePickupUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ public class PartTimePickupUserController {
 
     @Autowired
     private PartTimePickupUserService partTimePickupUserService;
+
 
     @RequestMapping("/login")
     @ResponseBody
@@ -64,6 +66,7 @@ public class PartTimePickupUserController {
     }
 
     //获取所有代取申请列表
+    //todo:目前实现的是列出所有的申请，并不排序。所以目前要做的就是排序。
     @GetMapping("/getAllApplications")
     @ResponseBody
     public List<PickupApplication> getAllApplications() {

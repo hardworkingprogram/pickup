@@ -1,13 +1,16 @@
 package org.example.service.partTimeUser.impl;
 
 
+import org.example.mapper.ordinaryUser.NotificationMapper;
 import org.example.mapper.partTimeUser.PartTimePickupUserMapper;
+import org.example.pojo.Notification;
 import org.example.pojo.PartTimePickupUser;
 import org.example.pojo.PickupApplication;
 import org.example.service.partTimeUser.PartTimePickupUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -15,6 +18,8 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
 
     @Autowired
     private PartTimePickupUserMapper partTimePickupUserMapper;
+    @Autowired
+    private NotificationMapper notificationMapper;
 
     @Override
     public PartTimePickupUser getPartTimeUserById(int pickup_user_id) {
@@ -33,6 +38,11 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
 
     @Override
     public boolean acceptOrder(int applicationId, int pickupUserId) {
+        /*todo:接单后需要完成的事：
+           1.更新代取申请的状态
+           2.更新包裹状态
+           3.发送通知给普通用户*/
+
         // 1. 校验订单是否存在且状态为"待处理"
         PickupApplication application = partTimePickupUserMapper.getApplicationById(applicationId);
         if (application == null || !"待处理".equals(application.getStatus())) {
@@ -41,11 +51,18 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
 
         // 2. 更新订单状态为"已处理"
 
-
-        //todo:根据package_id查找packages表，然后更新其中的pickup_time和pickup_user_id
         int packageId = application.getPackage_id();
+        int userId = application.getUser_id();
+
+        //更新包裹状态
         int updatePackageRows = partTimePickupUserMapper.updatePackageTimeAndId(packageId, pickupUserId);
+        //更新申请状态
         int updateApplicationRows = partTimePickupUserMapper.updateApplicationStatus(applicationId);
+        //发送通知给用户
+        String content = "您的包裹（包裹ID：" + packageId + "）正在配送中，请耐心等候。";
+        Notification notification = new Notification(userId, packageId, "快递接单通知", content, new Date());
+        notificationMapper.insertNotification(notification);
+
         return updatePackageRows > 0 && updateApplicationRows > 0;
     }
 }
