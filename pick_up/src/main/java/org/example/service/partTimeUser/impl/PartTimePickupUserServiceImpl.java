@@ -3,6 +3,7 @@ package org.example.service.partTimeUser.impl;
 
 import org.example.mapper.ordinaryUser.NotificationMapper;
 import org.example.mapper.partTimeUser.PartTimePickupUserMapper;
+import org.example.pojo.GaodeGeocodingUtil;
 import org.example.pojo.Notification;
 import org.example.pojo.PartTimePickupUser;
 import org.example.pojo.PickupApplication;
@@ -33,7 +34,27 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
 
     @Override
     public List<PickupApplication> getAllApplications() {
-        return partTimePickupUserMapper.selectUnassignedTasks();
+        // 获取所有未处理的订单
+        List<PickupApplication> applications = partTimePickupUserMapper.selectUnassignedTasks();
+        // 添加经纬度
+        for (PickupApplication app : applications) {
+            String location = app.getPickup_location();
+            double[] lngLat = GaodeGeocodingUtil.addressToLngLat(location);
+
+            if (lngLat != null) {
+                app.setPickup_lng(lngLat[0]); // 新增经度字段（需在PickupApplication实体中添加）
+                app.setPickup_lat(lngLat[1]); // 新增纬度字段
+            } else {
+                app.setPickup_lng(0);
+                app.setPickup_lat(0);
+            }
+            System.out.println(app.getPickup_lng());
+            System.out.println(app.getPickup_lat());
+            System.out.println(app.getPickup_location());
+            System.out.println("\n");
+        }
+
+        return applications;
     }
 
     @Override
@@ -65,4 +86,6 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
 
         return updatePackageRows > 0 && updateApplicationRows > 0;
     }
+
+
 }

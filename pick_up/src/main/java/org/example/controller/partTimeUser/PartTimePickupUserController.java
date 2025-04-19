@@ -66,6 +66,7 @@ public class PartTimePickupUserController {
     }
 
     //获取所有代取申请列表
+    //返回经纬度和其他需要展示的信息即可
     //todo:目前实现的是列出所有的申请，并不排序。所以目前要做的就是排序。
     @GetMapping("/getAllApplications")
     @ResponseBody

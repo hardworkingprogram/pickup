@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员快递信息管理</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+        button {
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>管理员快递信息管理</h1>
+<h2>快递信息列表</h2>
+<table id="packageTable">
+    <thead>
+    <tr>
+        <th>包裹 ID</th>
+        <th>快递公司</th>
+        <th>运单号</th>
+        <th>收件人 ID</th>
+        <th>包裹状态</th>
+        <th>到达时间</th>
+        <th>代取时间</th>
+        <th>代取用户 ID</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>新增快递信息</h2>
+<form id="addPackageForm">
+    <label for="expressCompany">快递公司:</label>
+    <input type="text" id="expressCompany" required><br>
+    <label for="trackingNumber">运单号:</label>
+    <input type="text" id="trackingNumber" required><br>
+    <label for="recipientId">收件人 ID:</label>
+    <input type="number" id="recipientId" required><br>
+    <button type="submit">新增</button>
+</form>
+
+<script>
+    // 页面加载完成后获取所有包裹信息
+    window.onload = function() {
+        fetch('/pickup_SpringBoot/admin/packages')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#packageTable tbody');
+                data.forEach(packageInfo => {
+                    const arrivalTime = packageInfo.arrival_time ?
+                        packageInfo.arrival_time.replace('T', ' ').split('.')[0] : '无';
+                    const pickupTime = packageInfo.pickup_time ?
+                        packageInfo.pickup_time.replace('T', ' ').split('.')[0] : '无';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${packageInfo.package_id}</td>
+                            <td>${packageInfo.express_company}</td>
+                            <td>${packageInfo.tracking_number}</td>
+                            <td>${packageInfo.recipient_id}</td>
+                            <td>${packageInfo.status}</td>
+                            <td>${arrivalTime}</td>
+                            <td>${pickupTime}</td>
+                            <td>${packageInfo.pickup_user_id || '无'}</td>
+                            <td>
+                                <button onclick="deletePackage(${packageInfo.package_id})">删除</button>
+                                <button onclick="editPackage(${packageInfo.package_id})">修改</button>
+                            </td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+            });
+
+        // 新增快递信息表单提交事件
+        const addPackageForm = document.getElementById('addPackageForm');
+        addPackageForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const expressCompany = document.getElementById('expressCompany').value;
+            const trackingNumber = document.getElementById('trackingNumber').value;
+            const recipientId = parseInt(document.getElementById('recipientId').value);
+
+            // 获取当前时间并格式化为 yyyy-MM-dd HH:mm:ss，同时指定时区
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const formattedArrivalTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+            // 构造请求数据，设置默认值
+            const packageData = {
+                express_company: expressCompany,
+                tracking_number: trackingNumber,
+                recipient_id: recipientId,
+                status: "到达快递点", // 默认值
+                arrival_time: formattedArrivalTime // 格式化后的日期
+            };
+
+            fetch('/pickup_SpringBoot/admin/packages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(packageData)
+            })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message);
+                    location.reload();
+                });
+        });
+    };
+
+    // 删除包裹信息
+    function deletePackage(packageId) {
+        if (confirm('确定要删除该包裹信息吗？')) {
+            fetch(`/pickup_SpringBoot/admin/packages/${packageId}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message);
+                    location.reload();
+                });
+        }
+    }
+
+    // 修改包裹信息
+    function editPackage(packageId) {
+        fetch(`/pickup_SpringBoot/admin/packages/${packageId}`)
+            .then(response => response.json())
+            .then(packageInfo => {
+                const newExpressCompany = prompt('请输入新的快递公司：', packageInfo.express_company);
+                const newTrackingNumber = prompt('请输入新的运单号：', packageInfo.tracking_number);
+                const newRecipientId = parseInt(prompt('请输入新的收件人 ID：', packageInfo.recipient_id));
+                const newStatus = prompt('请输入新的包裹状态：', packageInfo.status);
+                const newArrivalTime = prompt('请输入新的到达时间（格式：YYYY-MM-dd HH:mm:ss）：',
+                    packageInfo.arrival_time ? packageInfo.arrival_time.replace('T', ' ').split('.')[0] : '');
+                const newPickupTime = prompt('请输入新的代取时间（格式：YYYY-MM-dd HH:mm:ss）：',
+                    packageInfo.pickup_time ? packageInfo.pickup_time.replace('T', ' ').split('.')[0] : '');
+                const newPickupUserId = prompt('请输入新的代取用户 ID：', packageInfo.pickup_user_id || '');
+
+                const packageData = {
+                    express_company: newExpressCompany,
+                    tracking_number: newTrackingNumber,
+                    recipient_id: newRecipientId,
+                    status: newStatus,
+                    arrival_time: new Date(newArrivalTime),
+                    pickup_time: newPickupTime ? new Date(newPickupTime) : null,
+                    pickup_user_id: newPickupUserId ? parseInt(newPickupUserId) : null
+                };
+
+                fetch(`/pickup_SpringBoot/admin/packages/${packageId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(packageData)
+                })
+                    .then(response => response.text())
+                    .then(message => {
+                        alert(message);
+                        location.reload();
+                    });
+            });
+    }
+</script>
+</body>
+</html>

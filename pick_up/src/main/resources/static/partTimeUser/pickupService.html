@@ -206,33 +206,7 @@
     </table>
 </div>
 <script>
-    // ========== 订单数据获取 ==========
-    // 修改订单数据获取逻辑
-    fetch('/pickup_SpringBoot/partTimeUser/getAllApplications')
-        .then(response => response.json())
-        .then(data => {
-            const tbody = document.getElementById('orders-body');
-            tbody.innerHTML = data.map(item => `
-            <tr>
-                <td>${item.application_id}</td>
-                <td>${item.user_id}</td>
-                <td>${item.package_id}</td>
-                <td>${formatDateTime(item.pickup_time)}</td>
-                <td>${item.pickup_location}</td>
-                <td>
-                    <span class="status-tag ${getStatusClass(item.status)}">
-                        ${item.status}
-                    </span>
-                    ${item.status === '待处理' ?
-                `<button class="action-button"
-                                onclick="handleAcceptOrder('${item.application_id}')">
-                                立即接单
-                            </button>` :
-                '<span style="color:#999;">已接单</span>'}
-                </td>
-            </tr>
-        `).join('');
-        });
+
 
     // 新增时间格式化函数
     function formatDateTime(isoString) {
@@ -300,7 +274,41 @@
         zoom:12,
         resizeEnable: true
     });
+    // 定义快递点数据（含自定义样式）
+    const points = [
+        {
+            lng: 126.682246,
+            lat: 45.775895,
+            name: '21B楼菜鸟驿站'
+        },
+        {
+            lng: 126.681351,
+            lat: 45.777902,
+            name: '北体菜鸟驿站'
+        }
+    ];
 
+    // 批量添加标记（含名称标注）
+    points.forEach(p => {
+        new AMap.Marker({
+            map: map,
+            position: [p.lng, p.lat],
+            title: p.name, // 悬停提示
+            label: {
+                content: p.name, // 实时显示名称
+                offset: new AMap.Pixel(12, -24), // 名称位置偏移
+                style: {
+                    color: '#fff',
+                    background: 'rgba(255,87,51,0.9)', // 半透明红色背景
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    border: '1px solid #ff5733'
+                }
+            },
+            icon: p.icon // 应用自定义图标
+        });
+    });
     AMap.plugin('AMap.Geolocation', function() {
         var geolocation = new AMap.Geolocation({
             enableHighAccuracy: true,
@@ -328,29 +336,102 @@
 
         // 结构化展示定位信息
         const detailsHtml = `
-        <div class="info-item">
-            <span class="label">📍 坐标：</span>
-            <span class="value">${data.position.lng.toFixed(6)}, ${data.position.lat.toFixed(6)}</span>
-        </div>
-        <div class="info-item">
-            <span class="label">📡 类型：</span>
-            <span class="value">${data.location_type}</span>
-        </div>
-        <div class="info-item">
-            <span class="label">🏠 地址：</span>
-            <span class="value">${data.formattedAddress}</span>
-        </div>
-        <div class="info-item">
-            <span class="label">📏 精度：</span>
-            <span class="value">${data.accuracy || '--'} 米</span>
-        </div>
-        <div class="info-item">
-            <span class="label">🧭 偏移：</span>
-            <span class="value">${data.isConverted ? '已纠偏' : '原始数据'}</span>
-        </div>
-    `;
+    <div class="info-item">
+        <span class="label">📍 坐标：</span>
+        <span class="value">${data.position.lng.toFixed(6)}, ${data.position.lat.toFixed(6)}</span>
+    </div>
+    <div class="info-item">
+        <span class="label">📡 类型：</span>
+        <span class="value">${data.location_type}</span>
+    </div>
+    <div class="info-item">
+        <span class="label">🏠 地址：</span>
+        <span class="value">${data.formattedAddress}</span>
+    </div>
+    <div class="info-item">
+        <span class="label">📏 精度：</span>
+        <span class="value">${data.accuracy || '--'} 米</span>
+    </div>
+    <div class="info-item">
+        <span class="label">🧭 偏移：</span>
+        <span class="value">${data.isConverted ? '已纠偏' : '原始数据'}</span>
+    </div>`;
 
         document.getElementById('location-details').innerHTML = detailsHtml;
+
+        // 获取用户坐标
+        const userLng = data.position.lng;
+        const userLat = data.position.lat;
+
+        // 获取并处理订单数据
+        fetch('/pickup_SpringBoot/partTimeUser/getAllApplications')
+            .then(response => response.json())
+            .then(orders => {
+                // 过滤无效坐标并计算距离
+                const processedOrders = orders
+                    .filter(item => item.pickup_lng && item.pickup_lat)
+                    .map(item => {
+                        // 计算距离（单位：米）
+                        const distance = AMap.GeometryUtil.distance(
+                            [userLng, userLat],
+                            [item.pickup_lng, item.pickup_lat]
+                        );
+
+                        // 添加距离分类
+                        return {
+                            ...item,
+                            distance: Math.round(distance),
+                            distanceClass: distance < 500 ? 'distance-near' :
+                                distance < 1500 ? 'distance-medium' : 'distance-far'
+                        };
+                    })
+                    // 按距离排序
+                    .sort((a, b) => a.distance - b.distance);
+
+                // 渲染订单列表
+                const tbody = document.getElementById('orders-body');
+                tbody.innerHTML = processedOrders.length ? processedOrders.map(item => `
+                <tr>
+                    <td>${item.application_id}</td>
+                    <td>${item.user_id}</td>
+                    <td>${item.package_id}</td>
+                    <td>${formatDateTime(item.pickup_time)}</td>
+                    <td>${item.pickup_location}</td>
+                    <td>
+                        <span class="distance-tag ${item.distanceClass}">
+                            ${item.distance}米
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-tag ${getStatusClass(item.status)}">
+                            ${item.status}
+                        </span>
+                        ${item.status === '待处理' ?
+                    `<button class="action-button"
+                                    onclick="handleAcceptOrder('${item.application_id}')">
+                                    立即接单（${item.distance}米）
+                            </button>` :
+                    '<span style="color:#999;">已接单</span>'}
+                    </td>
+                </tr>
+            `).join('') : `
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:30px;">
+                        当前没有可接订单
+                    </td>
+                </tr>
+            `;
+            })
+            .catch(error => {
+                console.error('订单加载失败:', error);
+                document.getElementById('orders-body').innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center;color:red;padding:30px;">
+                        订单加载失败，请刷新重试
+                    </td>
+                </tr>
+            `;
+            });
     }
 
     function onError(data) {
