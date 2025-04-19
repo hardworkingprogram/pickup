@@ -30,4 +30,22 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
     public List<PickupApplication> getAllApplications() {
         return partTimePickupUserMapper.selectUnassignedTasks();
     }
+
+    @Override
+    public boolean acceptOrder(int applicationId, int pickupUserId) {
+        // 1. 校验订单是否存在且状态为"待处理"
+        PickupApplication application = partTimePickupUserMapper.getApplicationById(applicationId);
+        if (application == null || !"待处理".equals(application.getStatus())) {
+            return false;
+        }
+
+        // 2. 更新订单状态为"已处理"
+
+
+        //todo:根据package_id查找packages表，然后更新其中的pickup_time和pickup_user_id
+        int packageId = application.getPackage_id();
+        int updatePackageRows = partTimePickupUserMapper.updatePackageTimeAndId(packageId, pickupUserId);
+        int updateApplicationRows = partTimePickupUserMapper.updateApplicationStatus(applicationId);
+        return updatePackageRows > 0 && updateApplicationRows > 0;
+    }
 }

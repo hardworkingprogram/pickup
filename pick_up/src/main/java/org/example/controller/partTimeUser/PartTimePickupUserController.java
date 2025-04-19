@@ -7,10 +7,7 @@ import org.example.pojo.User;
 import org.example.service.partTimeUser.PartTimePickupUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -71,5 +68,28 @@ public class PartTimePickupUserController {
     @ResponseBody
     public List<PickupApplication> getAllApplications() {
         return partTimePickupUserService.getAllApplications();
+    }
+
+    // 新增接单接口
+    @PostMapping("/acceptOrder/{applicationId}")
+    @ResponseBody
+    public String acceptOrder(
+            @PathVariable("applicationId") int applicationId,
+            HttpServletRequest request
+    ) {
+        try {
+            // 从Session获取当前兼职用户ID（登录时保存的user_id）
+            HttpSession session = request.getSession();
+            Integer pickupUserId = (Integer) session.getAttribute("user_id");
+            if (pickupUserId == null) {
+                return "请先登录";
+            }
+
+            // 调用Service处理接单逻辑
+            boolean success = partTimePickupUserService.acceptOrder(applicationId, pickupUserId);
+            return success ? "接单成功" : "接单失败（订单不存在或已被处理）";
+        } catch (Exception e) {
+            return "系统异常：" + e.getMessage();
+        }
     }
 }

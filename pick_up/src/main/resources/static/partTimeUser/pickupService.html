@@ -77,12 +77,111 @@
             background: #d4edda;
             color: #155724;
         }
+
+        /* 信息框内容样式 */
+        .info-item {
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .label {
+            color: #666;
+            display: inline-block;
+            width: 80px;
+            margin-right: 8px;
+        }
+
+        .value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 初始隐藏信息框 */
+        #location-info {
+            display: none;
+        }
+
+        .action-button {
+            padding: 4px 12px;
+            border: 1px solid #ff4d4f;
+            border-radius: 4px;
+            background: white;
+            color: #ff4d4f;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: all 0.3s;
+        }
+
+        .action-button:hover {
+            background: #ff4d4f;
+            color: white;
+        }
+
+        .action-button:disabled {
+            border-color: #d9d9d9;
+            color: #d9d9d9;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
 <!-- 上半部分：地图容器 -->
+
+<!-- 在body内添加加载提示 -->
+<div id="loading" style="
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+">
+    <i class="fa fa-spinner fa-spin"></i> 定位中...
+</div>
+
+<script>
+    // 修改地图定位部分代码
+    function initMap() {
+        showLoading(); // 新增
+
+        AMap.plugin('AMap.Geolocation', function() {
+            var geolocation = new AMap.Geolocation({
+                enableHighAccuracy: true,
+                timeout: 10000
+            });
+
+            geolocation.getCurrentPosition(function(status, result){
+                hideLoading(); // 新增
+
+                if(status == 'complete'){
+                    onComplete(result)
+                } else {
+                    onError(result)
+                }
+            });
+        });
+    }
+
+    function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+    }
+
+    function hideLoading() {
+        document.getElementById('loading').style.display = 'none';
+    }
+</script>
+
 <div id="map-container">
     <div id="container" style="width:100%;height:100%;"></div>
+</div>
+<!-- 新增定位信息展示容器 -->
+<div class="info" id="location-info">
+    <h4 style="margin:0 0 10px 0;color:#333;">定位信息</h4>
+    <div id="location-details"></div>
 </div>
 
 <!-- 下半部分：信息展示 -->
@@ -108,37 +207,83 @@
 </div>
 <script>
     // ========== 订单数据获取 ==========
+    // 修改订单数据获取逻辑
     fetch('/pickup_SpringBoot/partTimeUser/getAllApplications')
         .then(response => response.json())
         .then(data => {
             const tbody = document.getElementById('orders-body');
             tbody.innerHTML = data.map(item => `
-                <tr>
-                    <td>${item.application_id}</td>
-                    <td>${item.user_id}</td>
-                    <td>${item.package_id}</td>
-                    <td>${item.pickup_time}</td>
-                    <td>${item.pickup_location}</td>
-                    <td>
-                        <span class="status-tag ${getStatusClass(item.status)}">
-                            ${item.status}
-                        </span>
-                    </td>
-                </tr>
-            `).join('');
-        })
-        .catch(error => {
-            document.getElementById('orders-body').innerHTML = `
-                <tr>
-                    <td colspan="6" style="color:#dc3545;text-align:center;">
-                        数据加载失败：${error.message}
-                    </td>
-                </tr>
-            `;
+            <tr>
+                <td>${item.application_id}</td>
+                <td>${item.user_id}</td>
+                <td>${item.package_id}</td>
+                <td>${formatDateTime(item.pickup_time)}</td>
+                <td>${item.pickup_location}</td>
+                <td>
+                    <span class="status-tag ${getStatusClass(item.status)}">
+                        ${item.status}
+                    </span>
+                    ${item.status === '待处理' ?
+                `<button class="action-button"
+                                onclick="handleAcceptOrder('${item.application_id}')">
+                                立即接单
+                            </button>` :
+                '<span style="color:#999;">已接单</span>'}
+                </td>
+            </tr>
+        `).join('');
         });
+
+    // 新增时间格式化函数
+    function formatDateTime(isoString) {
+        const date = new Date(isoString);
+        return date.toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }).replace(/\//g, '-');
+    }
 
     function getStatusClass(status) {
         return status === '待处理' ? 'status-pending' : 'status-completed';
+    }
+
+    // 接单处理函数
+    async function handleAcceptOrder(applicationId) {
+        const button = event.target;
+        button.disabled = true;
+        button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 处理中';
+
+        try {
+            // 模拟API调用，实际需要替换为真实接口
+            const response = await fetch(`/pickup_SpringBoot/partTimeUser/acceptOrder/${applicationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+            const responseText = await response.text();
+            if (responseText === "接单成功") {
+                alert('接单成功！');
+                // 更新页面状态
+                button.parentElement.innerHTML = `
+                    <span class="status-tag status-completed">
+                        已接单
+                    </span>
+                    <span style="color:#999;margin-left:8px;">进行中</span>
+                `;
+            } else {
+                throw new Error('接单失败');
+            }
+        } catch (error) {
+            alert(error.message);
+            button.disabled = false;
+            button.innerHTML = '立即接单';
+        }
     }
 
     /* ========== 已有的地图代码完全保留 ========== */
@@ -178,19 +323,34 @@
     });
 
     function onComplete(data) {
-        document.getElementById('status').innerHTML='定位成功'
-        var str = [];
-        str.push('定位结果：' + data.position);
-        str.push('定位类别：' + data.location_type);
-        var position_de = data.formattedAddress;
-        position_ie = data.formattedAddress;
-        str.push('位置：' + position_de);
-        str.push('详细信息：' + data.message);
-        if(data.accuracy){
-            str.push('精度：' + data.accuracy + ' 米');
-        }
-        str.push('是否经过偏移：' + (data.isConverted ? '是' : '否'));
-        document.getElementById('result').innerHTML = str.join('<br>');
+        // 确保信息容器可见
+        document.getElementById('location-info').style.display = 'block';
+
+        // 结构化展示定位信息
+        const detailsHtml = `
+        <div class="info-item">
+            <span class="label">📍 坐标：</span>
+            <span class="value">${data.position.lng.toFixed(6)}, ${data.position.lat.toFixed(6)}</span>
+        </div>
+        <div class="info-item">
+            <span class="label">📡 类型：</span>
+            <span class="value">${data.location_type}</span>
+        </div>
+        <div class="info-item">
+            <span class="label">🏠 地址：</span>
+            <span class="value">${data.formattedAddress}</span>
+        </div>
+        <div class="info-item">
+            <span class="label">📏 精度：</span>
+            <span class="value">${data.accuracy || '--'} 米</span>
+        </div>
+        <div class="info-item">
+            <span class="label">🧭 偏移：</span>
+            <span class="value">${data.isConverted ? '已纠偏' : '原始数据'}</span>
+        </div>
+    `;
+
+        document.getElementById('location-details').innerHTML = detailsHtml;
     }
 
     function onError(data) {

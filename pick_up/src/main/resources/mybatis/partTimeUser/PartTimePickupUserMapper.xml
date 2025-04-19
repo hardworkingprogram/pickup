@@ -14,4 +14,23 @@
         FROM pickup_applications pa
         WHERE pa.status = '待处理'
     </select>
+
+    <select id="getApplicationById" resultType="PickupApplication">
+        SELECT application_id, user_id, package_id, pickup_time, pickup_location, status
+        FROM pickup_applications
+        WHERE application_id = #{applicationId}
+    </select>
+
+    <update id="updateApplicationStatus">
+        update pickup_applications
+        set status = '已处理'
+        where application_id = #{applicationId}
+    </update>
+
+
+    <update id="updatePackageTimeAndId">
+        UPDATE packages
+        SET pickup_time = NOW(), pickup_user_id = #{pickupUserId}, status = '代取中'
+        WHERE package_id = #{packageId}
+    </update>
 </mapper>
