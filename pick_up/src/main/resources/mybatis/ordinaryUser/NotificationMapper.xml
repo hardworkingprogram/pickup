@@ -8,11 +8,15 @@
         VALUES (#{user_id}, #{package_id}, #{notification_type}, #{content}, #{send_time})
     </insert>
     <insert id="insertNotificationForPickup" parameterType="org.example.pojo.Notification">
-        INSERT INTO notifications_pickup (pickup_id, package_id, notification_type, content, send_time)
+        INSERT INTO notifications_pickup (user_id, package_id, notification_type, content, send_time)
         VALUES (#{user_id}, #{package_id}, #{notification_type}, #{content}, #{send_time})
     </insert>
     <select id="getNotificationsByUserId" resultType="org.example.pojo.Notification">
         SELECT * FROM notifications
         WHERE user_id = #{userId}
+    </select>
+    <select id="getNotificationsByPickupUserId" resultType="org.example.pojo.Notification">
+        SELECT * FROM notifications_pickup
+        WHERE user_id = #{pickupUserId}
     </select>
 </mapper>

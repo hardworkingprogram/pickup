@@ -21,4 +21,9 @@ public class NotificationServiceImpl implements NotificationService {
     public List<Notification> getNotificationsByUserId(int userId) {
         return notificationMapper.getNotificationsByUserId(userId);
     }
+
+    @Override
+    public List<Notification> getNotificationsByPickupUserId(int pickupUserId) {
+        return notificationMapper.getNotificationsByPickupUserId(pickupUserId);
+    }
 }

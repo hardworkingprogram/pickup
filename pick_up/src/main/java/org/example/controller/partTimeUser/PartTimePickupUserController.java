@@ -1,6 +1,7 @@
 package org.example.controller.partTimeUser;
 
 
+import org.example.pojo.Notification;
 import org.example.pojo.PartTimePickupUser;
 import org.example.pojo.PickupApplication;
 import org.example.pojo.User;
@@ -22,7 +23,8 @@ public class PartTimePickupUserController {
 
     @Autowired
     private PartTimePickupUserService partTimePickupUserService;
-
+    @Autowired
+    private NotificationService notificationService;
 
     @RequestMapping("/login")
     @ResponseBody
@@ -96,4 +98,26 @@ public class PartTimePickupUserController {
             return "系统异常：" + e.getMessage();
         }
     }
+    @GetMapping("/getNotifications") // 移除了路径变量
+    @ResponseBody // 确保返回JSON格式
+    public List<Notification> getNotificationsByUserId(
+            @RequestParam("pickupUserId") int userId) {
+        try {
+            System.out.println("getNotificationsByUserId called with userId: " + userId);
+            // 打印列表中的所有数据
+            List<Notification> list = notificationService.getNotificationsByPickupUserId(userId);
+            for (Notification notification : list) {
+                System.out.println(notification.getNotification_id() + " " +
+                        notification.getUser_id() + " " + notification.getPackage_id() + " " +
+                        notification.getNotification_type() + " " + notification.getContent() + " " +
+                        notification.getSend_time() + " " + notification.isIs_read());
+            }
+            return list;
+        } catch (Exception e) {
+            // 可以根据实际情况记录日志或者返回错误信息
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
