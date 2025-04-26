@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.admin.AdminPickupApplicationMapper">
+
+    <select id="selectUnassignedTasksOrderByCreateTime" resultType="org.example.pojo.PickupApplication">
+        SELECT * FROM pickup_applications WHERE status = '待处理' ORDER BY pickup_time ASC
+    </select>
+
+    <select id="getApplicationById" resultType="org.example.pojo.PickupApplication">
+        SELECT * FROM pickup_applications WHERE application_id = #{applicationId}
+    </select>
+
+    <update id="updateApplicationStatusAndCourierId">
+        UPDATE pickup_applications
+        SET status = '已处理', courier_id = #{courierId}
+        WHERE application_id = #{applicationId} AND status = '待处理';
+    </update>
+
+</mapper>

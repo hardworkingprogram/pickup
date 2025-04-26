@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员强制分配代取任务</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>管理员强制分配代取任务</h1>
+<h2>未接单任务列表</h2>
+<table id="taskTable">
+    <thead>
+    <tr>
+        <!-- 这里假设后端返回的字段有 application_id, user_id, package_id, pickup_time, pickup_location, status -->
+        <th>任务ID</th>
+        <th>用户ID</th>
+        <th>包裹ID</th>
+        <th>创建时间</th>
+        <th>代取地点</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    // 新增时间格式化函数
+    function formatDateTime(isoString) {
+        const date = new Date(isoString);
+        return date.toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }).replace(/\//g, '-');
+    }
+
+    window.onload = function() {
+        fetch('/pickup_SpringBoot/admin/unassignedTasks')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#taskTable tbody');
+                data.forEach(task => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${task.application_id}</td>
+                            <td>${task.user_id}</td>
+                            <td>${task.package_id}</td>
+                            <td>${formatDateTime(task.pickup_time)}</td>
+                            <td>${task.pickup_location}</td>
+                            <td>${task.status}</td>
+                            <td>
+                                <button onclick="assignTask(${task.application_id})">分配任务</button>
+                            </td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+            });
+    };
+
+    function assignTask(applicationId) {
+        const courierId = prompt('请输入要分配的快递员ID：');
+        if (courierId) {
+            fetch(`/pickup_SpringBoot/admin/assignTask/${applicationId}/${courierId}`, {
+                method: 'POST'
+            })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message);
+                    location.reload();
+                });
+        }
+    }
+</script>
+</body>
+</html>

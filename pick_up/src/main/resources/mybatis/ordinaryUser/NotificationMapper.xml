@@ -7,6 +7,10 @@
         INSERT INTO notifications (user_id, package_id, notification_type, content, send_time)
         VALUES (#{user_id}, #{package_id}, #{notification_type}, #{content}, #{send_time})
     </insert>
+    <insert id="insertNotificationForPickup" parameterType="org.example.pojo.Notification">
+        INSERT INTO notifications_pickup (pickup_id, package_id, notification_type, content, send_time)
+        VALUES (#{user_id}, #{package_id}, #{notification_type}, #{content}, #{send_time})
+    </insert>
     <select id="getNotificationsByUserId" resultType="org.example.pojo.Notification">
         SELECT * FROM notifications
         WHERE user_id = #{userId}
