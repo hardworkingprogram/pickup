@@ -92,4 +92,16 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
         return partTimePickupUserMapper.updateUserInfo(partTimePickupUser) > 0;
     }
 
+    @Override
+    public PartTimePickupUser getByPhone(String phoneNumber) {
+        return partTimePickupUserMapper.selectByPhone(phoneNumber);
+    }
+
+    @Override
+    public boolean register(PartTimePickupUser user) {
+        user.setScore(0.0f);
+        int result = partTimePickupUserMapper.insertUser(user);
+        return result > 0;
+    }
+
 }

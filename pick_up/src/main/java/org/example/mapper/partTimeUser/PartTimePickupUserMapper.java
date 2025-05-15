@@ -24,4 +24,6 @@ public interface PartTimePickupUserMapper {
     int updatePackageTimeAndId(@Param("packageId") int packageId, @Param("pickupUserId") int pickupUserId);
 
     int updateUserInfo(PartTimePickupUser partTimePickupUser);
+    PartTimePickupUser selectByPhone(String phoneNumber);
+    int insertUser(PartTimePickupUser user);
 }

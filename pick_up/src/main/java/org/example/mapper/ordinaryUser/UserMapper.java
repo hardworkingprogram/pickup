@@ -10,4 +10,6 @@ public interface UserMapper {
     User selectUserByPhoneAndPassword(@Param("phone_number") String phone_number, @Param("password") String password);
     User selectUserById(int user_id);
     int updateUserInfo(User user);
+    User selectByPhone(String phone_number);
+    int register(User user);
 }

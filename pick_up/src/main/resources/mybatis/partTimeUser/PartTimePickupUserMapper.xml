@@ -41,4 +41,11 @@
         contact_info = #{contact_info}
         WHERE pickup_user_id = #{pickup_user_id}
     </update>
+    <select id="selectByPhone" resultType="PartTimePickupUser">
+        SELECT * FROM part_time_pickup_users WHERE phone_number = #{phoneNumber}
+    </select>
+    <insert id="insertUser" parameterType="org.example.pojo.PartTimePickupUser">
+        INSERT INTO part_time_pickup_users (phone_number, password, name, nickname, contact_info, score)
+        VALUES (#{phone_number}, #{password}, #{name}, #{nickname}, #{contact_info}, #{score})
+    </insert>
 </mapper>

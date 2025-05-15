@@ -47,4 +47,15 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public User getByPhone(String phoneNumber) {
+        return userMapper.selectByPhone(phoneNumber);
+    }
+
+    @Override
+    public boolean register(User user) {
+        int result = userMapper.register(user);
+        return result > 0;
+    }
 }

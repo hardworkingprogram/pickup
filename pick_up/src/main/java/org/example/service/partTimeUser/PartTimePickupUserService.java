@@ -13,4 +13,6 @@ public interface PartTimePickupUserService {
     List<PickupApplication> getAllApplications();
     boolean acceptOrder(int applicationId, int pickupUserId);
     boolean updateUserInfo(PartTimePickupUser partTimePickupUser);
+    PartTimePickupUser getByPhone(String phoneNumber);
+    boolean register(PartTimePickupUser user);
 }

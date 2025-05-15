@@ -21,4 +21,11 @@
         address = #{address}
         where user_id = #{user_id}
     </update>
+    <select id="selectByPhone" resultType="org.example.pojo.User">
+        select * from ordinary_users where phone_number = #{phone_number}
+    </select>
+    <insert id="register" parameterType="org.example.pojo.User">
+        insert into ordinary_users (phone_number, password, name, nickname, contact_info, address)
+        values (#{phone_number}, #{password}, #{name}, #{nickname}, #{contact_info}, #{address})
+    </insert>
 </mapper>
