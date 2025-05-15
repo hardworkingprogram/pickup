@@ -1,8 +1,13 @@
 package org.example.controller.ordinaryUser;
 
 
+import org.example.pojo.Admin;
+import org.example.pojo.PartTimePickupUser;
 import org.example.pojo.User;
+import org.example.service.admin.AdminService;
 import org.example.service.ordinaryUser.UserService;
+import org.example.service.partTimeUser.PartTimePickupUserService;
+import org.example.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,36 +23,83 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private PartTimePickupUserService partTimePickupUserService;
+    @Autowired
+    private AdminService adminService;
 
 //    todo:这里需要实现注册功能
+//    @RequestMapping("/login")
+//    @ResponseBody
+//    public String login(@RequestParam String phone_number, @RequestParam String password, @RequestParam String role, HttpServletRequest request) {
+//        User user = null;
+//        if ("ordinary_user".equals(role)) {
+//            user = userService.login(phone_number, password);
+//        }
+//        //todo:登录功能session需要保存用户的id以便后续操作
+//        if (user != null) {
+//            HttpSession session = request.getSession();
+//            session.setAttribute("phone_number", phone_number);
+//            session.setAttribute("role", role); // 保存用户角色
+//            session.setAttribute("user_id", user.getUser_id());
+//            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); " +
+//                    "sessionStorage.setItem('role', '" + role + "'); " +
+//                    "sessionStorage.setItem('userId', '" + user.getUser_id() + "');" +
+//                    " window.location.href='/pickup_SpringBoot/ordinaryUser/dashboard.html';</script>";
+//        }
+//        return "登录失败";
+//    }
+
+
     @RequestMapping("/login")
     @ResponseBody
-    public String login(@RequestParam String phone_number, @RequestParam String password, @RequestParam String role, HttpServletRequest request) {
+    public Result<Map<String, Object>> login(
+            @RequestParam String phone_number,
+            @RequestParam String password,
+            @RequestParam String role,
+            HttpServletRequest request
+    ) {
         User user = null;
+        Admin admin = null;
+        PartTimePickupUser partTimePickupUser = null;
+
+        //  获取session
+        HttpSession session = request.getSession();
+        // 封装响应数据
+        Map<String, Object> data = new HashMap<>();
+
         if ("ordinary_user".equals(role)) {
             user = userService.login(phone_number, password);
-        }
-        //todo:登录功能session需要保存用户的id以便后续操作
-        if (user != null) {
-            HttpSession session = request.getSession();
-            session.setAttribute("phone_number", phone_number);
-            session.setAttribute("role", role); // 保存用户角色
             session.setAttribute("user_id", user.getUser_id());
-            return "<script>sessionStorage.setItem('phone_number', '" + phone_number + "'); " +
-                    "sessionStorage.setItem('role', '" + role + "'); " +
-                    "sessionStorage.setItem('userId', '" + user.getUser_id() + "');" +
-                    " window.location.href='/pickup_SpringBoot/ordinaryUser/dashboard.html';</script>";
+            data.put("user_id", user.getUser_id());
+        } else if ("part_time_user".equals(role)) {
+            partTimePickupUser = partTimePickupUserService.login(phone_number, password);
+            session.setAttribute("user_id", partTimePickupUser.getPickup_user_id());
+            data.put("user_id", partTimePickupUser.getPickup_user_id());
+        } else if ("admin".equals(role)) {
+            admin = adminService.login(phone_number, password);
+            session.setAttribute("user_id", admin.getAdmin_id());
+            data.put("user_id", admin.getAdmin_id());
         }
-        return "登录失败";
-    }
 
+        if (user != null|| partTimePickupUser != null||admin != null) {
+            session.setAttribute("phone_number", phone_number);
+            session.setAttribute("role", role);
+
+            data.put("role", role);
+            data.put("phone_number", phone_number);
+
+            return Result.success(data, "登录成功");
+        }
+        return Result.fail("登录失败，账号或密码错误");
+    }
 
     // 个人中心
     @RequestMapping("/personalCenter")
     public String personalCenter() {
         return "/ordinaryUser/personalCenter.html";
     }
+
     @GetMapping("/getPersonalInfo")
     @ResponseBody
     public Map<String, Object> getPersonalInfo(@RequestParam int user_id) {
