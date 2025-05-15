@@ -87,5 +87,9 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
         return updatePackageRows > 0 && updateApplicationRows > 0;
     }
 
+    @Override
+    public boolean updateUserInfo(PartTimePickupUser partTimePickupUser) {
+        return partTimePickupUserMapper.updateUserInfo(partTimePickupUser) > 0;
+    }
 
 }

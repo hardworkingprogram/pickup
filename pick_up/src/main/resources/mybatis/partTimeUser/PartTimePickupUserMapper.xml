@@ -33,4 +33,12 @@
         SET pickup_time = NOW(), pickup_user_id = #{pickupUserId}, status = '代取中'
         WHERE package_id = #{packageId}
     </update>
+    <update id="updateUserInfo">
+        UPDATE part_time_pickup_users
+        SET phone_number = #{phone_number},
+        name = #{name},
+        nickname = #{nickname},
+        contact_info = #{contact_info}
+        WHERE pickup_user_id = #{pickup_user_id}
+    </update>
 </mapper>

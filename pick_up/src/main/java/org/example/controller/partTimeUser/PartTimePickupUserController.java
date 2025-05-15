@@ -47,6 +47,7 @@ public class PartTimePickupUserController {
         return "登录失败";
     }
 
+    //个人中心
     @GetMapping("/personalCenter")
     public String personalCenter() {
         return "/partTimeUser/personalCenter.html";
@@ -65,6 +66,17 @@ public class PartTimePickupUserController {
             result.put("score", user.getScore());
         }
         return result;
+    }
+
+    @PostMapping("/updatePersonalInfo")
+    @ResponseBody
+    public String updatePersonalInfo(@RequestBody PartTimePickupUser partTimePickupUser) {
+        boolean success = partTimePickupUserService.updateUserInfo(partTimePickupUser);
+        if (success) {
+            return "个人信息修改成功";
+        } else {
+            return "个人信息修改失败";
+        }
     }
 
     //获取所有代取申请列表
