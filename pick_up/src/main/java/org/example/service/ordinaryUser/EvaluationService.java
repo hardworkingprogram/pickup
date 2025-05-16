@@ -5,5 +5,8 @@ import java.util.List;
 
 public interface EvaluationService {
     void submitEvaluation(Evaluation evaluation);
+
     List<Evaluation> getEvaluationsByUserId(int userId);
+
+    void updatePickupUserScore(int packageId);
 }

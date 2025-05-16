@@ -19,4 +19,20 @@
         SELECT * FROM notifications_pickup
         WHERE user_id = #{pickupUserId}
     </select>
+
+    <!-- 添加分页查询SQL -->
+    <select id="getNotificationsByPage" resultType="org.example.pojo.Notification">
+        SELECT *
+        FROM notifications
+        WHERE user_id = #{userId}
+        ORDER BY send_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 添加获取总数SQL -->
+    <select id="getTotalCountByUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM notifications
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

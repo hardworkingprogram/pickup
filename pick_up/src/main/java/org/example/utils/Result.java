@@ -13,9 +13,14 @@ public class Result<T> {
     private String message; // 提示信息
     private T data; // 响应数据（泛型类型）
 
-    // 成功响应方法
+    // 成功响应方法（带消息）
     public static <T> Result<T> success(T data, String message) {
         return new Result<>(true, message, data);
+    }
+
+    // 成功响应方法（不带消息）
+    public static <T> Result<T> success(T data) {
+        return new Result<>(true, "操作成功", data);
     }
 
     // 失败响应方法

@@ -12,4 +12,14 @@
         SELECT * FROM pickup_applications
         WHERE user_id = #{userId}
     </select>
+    <select id="getPickupRecordsByPage" resultType="org.example.pojo.PickupApplication">
+        SELECT * FROM pickup_applications
+        WHERE user_id = #{userId}
+        ORDER BY pickup_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+    <select id="getTotalCountByUserId" resultType="int">
+        SELECT COUNT(*) FROM pickup_applications
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

@@ -12,7 +12,8 @@ public class Evaluation {
     private String status;
 
     // 构造函数
-    public Evaluation() {}
+    public Evaluation() {
+    }
 
     public Evaluation(int user_id, int package_id, int satisfaction, String feedback, boolean is_complaint) {
         this.user_id = user_id;

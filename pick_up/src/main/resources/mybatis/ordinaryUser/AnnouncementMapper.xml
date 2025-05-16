@@ -4,8 +4,16 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.mapper.ordinaryUser.AnnouncementMapper">
     <select id="getAllAnnouncements" resultType="org.example.pojo.Announcement">
-        SELECT announcement_id, title, content, publish_time
-        FROM announcements
+        SELECT * FROM announcements ORDER BY publish_time DESC
+    </select>
+
+    <select id="getAnnouncementsByPage" resultType="org.example.pojo.Announcement">
+        SELECT * FROM announcements 
         ORDER BY publish_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*) FROM announcements
     </select>
 </mapper>
