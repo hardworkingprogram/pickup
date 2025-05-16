@@ -41,4 +41,36 @@ public interface AdminMapper {
     List<Map<String, Object>> getPartTimeUsersByPage(
             @Param("offset") int offset,
             @Param("pageSize") int pageSize);
+
+    // 获取公告总数
+    int getTotalAnnouncementCount();
+
+    // 分页查询公告
+    List<Map<String, Object>> getAnnouncementsByPage(
+            @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
+
+    // 获取包裹总数
+    int getTotalPackageCount();
+
+    // 分页查询包裹
+    List<Map<String, Object>> getPackagesByPage(
+            @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
+
+    // 获取代取任务总数
+    int getTotalPickupTaskCount();
+
+    // 分页查询代取任务
+    List<Map<String, Object>> getPickupTasksByPage(
+            @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
+
+    // 获取反馈总数
+    int getTotalFeedbackCount();
+
+    // 分页查询反馈
+    List<Map<String, Object>> getFeedbackByPage(
+            @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
 }

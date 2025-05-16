@@ -86,4 +86,57 @@
         SELECT * FROM part_time_pickup_users
                           LIMIT #{offset}, #{pageSize}
     </select>
+
+    <!-- 获取公告总数 -->
+    <select id="getTotalAnnouncementCount" resultType="int">
+        SELECT COUNT(*) FROM announcements
+    </select>
+
+    <!-- 分页查询公告 -->
+    <select id="getAnnouncementsByPage" resultType="java.util.Map">
+        SELECT * FROM announcements
+        ORDER BY publish_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 获取包裹总数 -->
+    <select id="getTotalPackageCount" resultType="int">
+        SELECT COUNT(*) FROM packages
+    </select>
+
+    <!-- 分页查询包裹 -->
+    <select id="getPackagesByPage" resultType="java.util.Map">
+        SELECT *
+        FROM packages
+        ORDER BY arrival_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 获取代取任务总数 (status != '待接单') -->
+    <select id="getTotalPickupTaskCount" resultType="int">
+        SELECT COUNT(*) FROM pickup_applications WHERE status != '已处理'
+    </select>
+
+    <!-- 分页查询代取任务 (status != '待接单') -->
+    <select id="getPickupTasksByPage" resultType="java.util.Map">
+        SELECT *
+        FROM pickup_applications
+        WHERE status != '已处理'
+        ORDER BY pickup_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 获取反馈总数 -->
+    <select id="getTotalFeedbackCount" resultType="int">
+        SELECT COUNT(*) FROM evaluations where is_complaint = 1
+    </select>
+
+    <!-- 分页查询反馈 -->
+    <select id="getFeedbackByPage" resultType="java.util.Map">
+        SELECT *
+        FROM evaluations
+        where is_complaint = 1
+        ORDER BY evaluation_id DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
 </mapper>

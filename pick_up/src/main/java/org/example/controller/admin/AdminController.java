@@ -93,4 +93,32 @@ public class AdminController {
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         return adminService.getPartTimeUsersByPage(pageNum, pageSize);
     }
+
+    // 新增：分页查询公告
+    @GetMapping("/announcements/page")
+    public Map<String, Object> getAnnouncementsByPage(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return adminService.getAnnouncementsByPage(pageNum, pageSize);
+    }
+
+    // 新增：分页查询包裹
+    @GetMapping("/packages/page")
+    public Map<String, Object> getPackagesByPage(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return adminService.getPackagesByPage(pageNum, pageSize);
+    }
+    @GetMapping("/pickupTasks/page")
+    public Map<String, Object> getPickupTasksByPage(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return adminService.getPickupTasksByPage(pageNum, pageSize);
+    }
+    @GetMapping("/feedback/page")
+    public Map<String, Object> getFeedbackByPage(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return adminService.getFeedbackByPage(pageNum, pageSize);
+    }
 }

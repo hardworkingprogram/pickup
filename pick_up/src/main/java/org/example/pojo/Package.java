@@ -11,6 +11,16 @@ public class Package {
     private Integer recipient_id;
     private String status;
 
+    public Integer getPoint_id() {
+        return point_id;
+    }
+
+    public void setPoint_id(Integer point_id) {
+        this.point_id = point_id;
+    }
+
+    private Integer point_id;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date arrival_time;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -20,7 +30,7 @@ public class Package {
     public Package() {
     }
 
-    public Package(Integer package_id, String express_company, String tracking_number, Integer recipient_id, String status, Date arrival_time, Date pickup_time, Integer pickup_user_id) {
+    public Package(Integer package_id, String express_company, String tracking_number, Integer recipient_id, String status, Date arrival_time, Date pickup_time, Integer pickup_user_id, Integer point_id) {
         this.package_id = package_id;
         this.express_company = express_company;
         this.tracking_number = tracking_number;
@@ -29,6 +39,7 @@ public class Package {
         this.arrival_time = arrival_time;
         this.pickup_time = pickup_time;
         this.pickup_user_id = pickup_user_id;
+        this.point_id = point_id;
     }
 
     public Integer getPackage_id() {

@@ -28,4 +28,16 @@ public interface AdminService {
 
     // 新增：分页查询兼职代取用户
     Map<String, Object> getPartTimeUsersByPage(int pageNum, int pageSize);
+
+    // 新增：分页查询公告
+    Map<String, Object> getAnnouncementsByPage(int pageNum, int pageSize);
+
+    // 新增：分页查询包裹
+    Map<String, Object> getPackagesByPage(int pageNum, int pageSize);
+
+    // 新增：分页查询代取任务
+    Map<String, Object> getPickupTasksByPage(int pageNum, int pageSize);
+
+    // 新增：分页查询反馈
+    Map<String, Object> getFeedbackByPage(int pageNum, int pageSize);
 }

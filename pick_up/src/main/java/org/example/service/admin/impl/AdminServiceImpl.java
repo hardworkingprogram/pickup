@@ -56,6 +56,7 @@ public class AdminServiceImpl implements AdminService {
         int rows = adminMapper.unfreezeUser(tableName, userId);
         return rows > 0;
     }
+
     // 新增：分页查询普通用户
     @Override
     public Map<String, Object> getOrdinaryUsersByPage(int pageNum, int pageSize) {
@@ -74,6 +75,54 @@ public class AdminServiceImpl implements AdminService {
         int offset = (pageNum - 1) * pageSize;
         List<Map<String, Object>> list = adminMapper.getPartTimeUsersByPage(offset, pageSize);
         int total = adminMapper.getTotalPartTimeUserCount();
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+        return result;
+    }
+
+    // 新增：分页查询公告
+    @Override
+    public Map<String, Object> getAnnouncementsByPage(int pageNum, int pageSize) {
+        int offset = (pageNum - 1) * pageSize;
+        List<Map<String, Object>> list = adminMapper.getAnnouncementsByPage(offset, pageSize);
+        int total = adminMapper.getTotalAnnouncementCount();
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+        return result;
+    }
+
+    // 新增：分页查询包裹
+    @Override
+    public Map<String, Object> getPackagesByPage(int pageNum, int pageSize) {
+        int offset = (pageNum - 1) * pageSize;
+        List<Map<String, Object>> list = adminMapper.getPackagesByPage(offset, pageSize);
+        int total = adminMapper.getTotalPackageCount();
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+        return result;
+    }
+
+    // 新增：分页查询代取任务
+    @Override
+    public Map<String, Object> getPickupTasksByPage(int pageNum, int pageSize) {
+        int offset = (pageNum - 1) * pageSize;
+        List<Map<String, Object>> list = adminMapper.getPickupTasksByPage(offset, pageSize);
+        int total = adminMapper.getTotalPickupTaskCount();
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+        return result;
+    }
+
+    // 新增：分页查询反馈
+    @Override
+    public Map<String, Object> getFeedbackByPage(int pageNum, int pageSize) {
+        int offset = (pageNum - 1) * pageSize;
+        List<Map<String, Object>> list = adminMapper.getFeedbackByPage(offset, pageSize);
+        int total = adminMapper.getTotalFeedbackCount();
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
         result.put("total", total);
