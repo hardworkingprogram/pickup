@@ -64,4 +64,26 @@
             </when>
         </choose>
     </update>
+
+    <!-- 获取普通用户总数 -->
+    <select id="getTotalOrdinaryUserCount" resultType="int">
+        SELECT COUNT(*) FROM ordinary_users
+    </select>
+
+    <!-- 分页查询普通用户 -->
+    <select id="getOrdinaryUsersByPage" resultType="java.util.Map">
+        SELECT * FROM ordinary_users
+                          LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 获取兼职代取用户总数 -->
+    <select id="getTotalPartTimeUserCount" resultType="int">
+        SELECT COUNT(*) FROM part_time_pickup_users
+    </select>
+
+    <!-- 分页查询兼职代取用户 -->
+    <select id="getPartTimeUsersByPage" resultType="java.util.Map">
+        SELECT * FROM part_time_pickup_users
+                          LIMIT #{offset}, #{pageSize}
+    </select>
 </mapper>

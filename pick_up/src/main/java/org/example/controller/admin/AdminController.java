@@ -19,7 +19,8 @@ public class AdminController {
     // 管理员登录
     @RequestMapping("/login")
     @ResponseBody
-    public String login(@RequestParam String phone_number, @RequestParam String password, @RequestParam String role, HttpServletRequest request) {
+    public String login(@RequestParam String phone_number, @RequestParam String password, @RequestParam String role,
+            HttpServletRequest request) {
         Admin admin = adminService.login(phone_number, password);
         if (admin != null) {
             HttpSession session = request.getSession();
@@ -35,20 +36,21 @@ public class AdminController {
         return "登录失败";
     }
     // 新增：查看所有普通用户信息
-    @GetMapping("/ordinaryUsers")
-    public List<Map<String, Object>> getAllOrdinaryUsers() {
-        return adminService.getAllOrdinaryUsers();
-    }
+    // @GetMapping("/ordinaryUsers")
+    // public List<Map<String, Object>> getAllOrdinaryUsers() {
+    // return adminService.getAllOrdinaryUsers();
+    // }
 
     // 新增：查看所有兼职代取用户信息
-    @GetMapping("/partTimeUsers")
-    public List<Map<String, Object>> getAllPartTimeUsers() {
-        return adminService.getAllPartTimeUsers();
-    }
+    // @GetMapping("/partTimeUsers")
+    // public List<Map<String, Object>> getAllPartTimeUsers() {
+    // return adminService.getAllPartTimeUsers();
+    // }
 
     // 新增：修改用户信息
     @PostMapping("/updateUserInfo")
-    public String updateUserInfo(@RequestParam String tableName, @RequestParam int userId, @RequestParam String field, @RequestParam String value) {
+    public String updateUserInfo(@RequestParam String tableName, @RequestParam int userId, @RequestParam String field,
+            @RequestParam String value) {
         boolean success = adminService.updateUserInfo(tableName, userId, field, value);
         if (success) {
             return "用户信息修改成功";
@@ -74,5 +76,21 @@ public class AdminController {
             return "用户账号解冻成功";
         }
         return "用户账号解冻失败";
+    }
+
+    // 新增：分页查询普通用户
+    @GetMapping("/ordinaryUsers/page")
+    public Map<String, Object> getOrdinaryUsersByPage(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return adminService.getOrdinaryUsersByPage(pageNum, pageSize);
+    }
+
+    // 新增：分页查询兼职代取用户
+    @GetMapping("/partTimeUsers/page")
+    public Map<String, Object> getPartTimeUsersByPage(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return adminService.getPartTimeUsersByPage(pageNum, pageSize);
     }
 }
