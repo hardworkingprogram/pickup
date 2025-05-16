@@ -35,4 +35,20 @@
         FROM notifications
         WHERE user_id = #{userId}
     </select>
+
+    <!-- 添加兼职代取用户的分页查询SQL -->
+    <select id="getNotificationsForPickupByPage" resultType="org.example.pojo.Notification">
+        SELECT *
+        FROM notifications_pickup
+        WHERE user_id = #{pickupUserId}
+        ORDER BY send_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 添加获取兼职代取用户通知总数SQL -->
+    <select id="getTotalCountForPickupByUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM notifications_pickup
+        WHERE user_id = #{pickupUserId}
+    </select>
 </mapper>

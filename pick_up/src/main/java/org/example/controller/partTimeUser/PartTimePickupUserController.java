@@ -1,6 +1,5 @@
 package org.example.controller.partTimeUser;
 
-
 import org.example.pojo.Notification;
 import org.example.pojo.PartTimePickupUser;
 import org.example.pojo.PickupApplication;
@@ -28,12 +27,13 @@ public class PartTimePickupUserController {
 
     @RequestMapping("/login")
     @ResponseBody
-    public String login(@RequestParam String phone_number, @RequestParam String password, @RequestParam String role, HttpServletRequest request) {
+    public String login(@RequestParam String phone_number, @RequestParam String password, @RequestParam String role,
+            HttpServletRequest request) {
         PartTimePickupUser partTimePickupUser = null;
         if ("part_time_user".equals(role)) {
             partTimePickupUser = partTimePickupUserService.login(phone_number, password);
         }
-        //todo:登录功能session需要保存用户的id以便后续操作
+        // todo:登录功能session需要保存用户的id以便后续操作
         if (partTimePickupUser != null) {
             HttpSession session = request.getSession();
             session.setAttribute("phone_number", phone_number);
@@ -47,7 +47,7 @@ public class PartTimePickupUserController {
         return "登录失败";
     }
 
-    //个人中心
+    // 个人中心
     @GetMapping("/personalCenter")
     public String personalCenter() {
         return "/partTimeUser/personalCenter.html";
@@ -79,9 +79,9 @@ public class PartTimePickupUserController {
         }
     }
 
-    //获取所有代取申请列表
-    //返回经纬度和其他需要展示的信息即可
-    //todo:目前实现的是列出所有的申请，并不排序。所以目前要做的就是排序。
+    // 获取所有代取申请列表
+    // 返回经纬度和其他需要展示的信息即可
+    // todo:目前实现的是列出所有的申请，并不排序。所以目前要做的就是排序。
     @GetMapping("/getAllApplications")
     @ResponseBody
     public List<PickupApplication> getAllApplications() {
@@ -93,8 +93,7 @@ public class PartTimePickupUserController {
     @ResponseBody
     public String acceptOrder(
             @PathVariable("applicationId") int applicationId,
-            HttpServletRequest request
-    ) {
+            HttpServletRequest request) {
         try {
             // 从Session获取当前兼职用户ID（登录时保存的user_id）
             HttpSession session = request.getSession();
@@ -110,6 +109,7 @@ public class PartTimePickupUserController {
             return "系统异常：" + e.getMessage();
         }
     }
+
     @GetMapping("/getNotifications") // 移除了路径变量
     @ResponseBody // 确保返回JSON格式
     public List<Notification> getNotificationsByUserId(
@@ -129,6 +129,27 @@ public class PartTimePickupUserController {
             // 可以根据实际情况记录日志或者返回错误信息
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @GetMapping("/getNotificationsForPickupByPage")
+    @ResponseBody
+    public Map<String, Object> getNotificationsForPickupByPage(
+            @RequestParam("pickupUserId") int pickupUserId,
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
+        try {
+            System.out.println("getNotificationsForPickupByPage called with userId: " + pickupUserId + ", pageNum: "
+                    + pageNum + ", pageSize: " + pageSize);
+            Map<String, Object> result = notificationService.getNotificationsForPickupByPage(pickupUserId, pageNum,
+                    pageSize);
+            System.out.println("Returned notifications for pickup user: " + result.get("list"));
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("error", "系统异常: " + e.getMessage());
+            return errorResult;
         }
     }
 

@@ -6,9 +6,14 @@ import java.util.Map;
 
 public interface NotificationService {
     void sendNotification(Notification notification);
+
     List<Notification> getNotificationsByUserId(int userId);
+
     List<Notification> getNotificationsByPickupUserId(int pickupUserId);
-    // 添加分页查询方法
+
+    // 添加普通用户通知分页查询方法
     Map<String, Object> getNotificationsByPage(int userId, int pageNum, int pageSize);
 
+    // 添加兼职代取用户通知分页查询方法
+    Map<String, Object> getNotificationsForPickupByPage(int pickupUserId, int pageNum, int pageSize);
 }

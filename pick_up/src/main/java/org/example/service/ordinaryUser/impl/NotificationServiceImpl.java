@@ -50,4 +50,26 @@ public class NotificationServiceImpl implements NotificationService {
 
         return result;
     }
+
+    @Override
+    public Map<String, Object> getNotificationsForPickupByPage(int pickupUserId, int pageNum, int pageSize) {
+        // 计算偏移量
+        int offset = (pageNum - 1) * pageSize;
+
+        // 获取总记录数
+        int total = notificationMapper.getTotalCountForPickupByUserId(pickupUserId);
+
+        // 获取分页数据
+        List<Notification> notifications = notificationMapper.getNotificationsForPickupByPage(pickupUserId, offset,
+                pageSize);
+
+        // 封装返回结果
+        Map<String, Object> result = new HashMap<>();
+        result.put("total", total);
+        result.put("list", notifications);
+        result.put("pageNum", pageNum);
+        result.put("pageSize", pageSize);
+
+        return result;
+    }
 }
