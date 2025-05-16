@@ -135,12 +135,12 @@ public class PartTimePickupUserController {
     @GetMapping("/getNotificationsForPickupByPage")
     @ResponseBody
     public Map<String, Object> getNotificationsForPickupByPage(
-            @RequestParam("pickupUserId") int pickupUserId,
+            @RequestParam("userId") int pickupUserId,
             @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
         try {
-            System.out.println("getNotificationsForPickupByPage called with userId: " + pickupUserId + ", pageNum: "
-                    + pageNum + ", pageSize: " + pageSize);
+//            System.out.println("getNotificationsForPickupByPage called with userId: " + pickupUserId + ", pageNum: "
+//                    + pageNum + ", pageSize: " + pageSize);
             Map<String, Object> result = notificationService.getNotificationsForPickupByPage(pickupUserId, pageNum,
                     pageSize);
             System.out.println("Returned notifications for pickup user: " + result.get("list"));
