@@ -4,7 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.mapper.partTimeUser.PackageMapper">
 
-<!--    todo:目前插入的当前时间是有问题的-->
     <insert id="insertPackage" parameterType="org.example.pojo.Package">
         INSERT INTO packages (express_company, tracking_number, recipient_id, status, arrival_time, pickup_time, pickup_user_id)
         VALUES (#{express_company}, #{tracking_number}, #{recipient_id}, #{status}, #{arrival_time}, #{pickup_time}, #{pickup_user_id})

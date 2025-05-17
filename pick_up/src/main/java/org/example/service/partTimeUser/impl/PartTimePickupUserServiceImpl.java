@@ -59,10 +59,6 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
 
     @Override
     public boolean acceptOrder(int applicationId, int pickupUserId) {
-        /*todo:接单后需要完成的事：
-           1.更新代取申请的状态
-           2.更新包裹状态
-           3.发送通知给普通用户*/
 
         // 1. 校验订单是否存在且状态为"待处理"
         PickupApplication application = partTimePickupUserMapper.getApplicationById(applicationId);

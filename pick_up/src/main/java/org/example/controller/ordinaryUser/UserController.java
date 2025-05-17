@@ -27,7 +27,6 @@ public class UserController {
     @Autowired
     private AdminService adminService;
 
-    // todo:这里需要实现注册功能
     @RequestMapping("/login")
     @ResponseBody
     public Result<Map<String, Object>> login(

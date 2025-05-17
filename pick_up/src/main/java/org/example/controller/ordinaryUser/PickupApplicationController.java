@@ -39,7 +39,6 @@ public class PickupApplicationController {
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "5") int pageSize,
             @RequestParam int userId) {
-        // TODO: 获取当前登录用户的 user_id
         return Result.success(pickupApplicationService.getPickupRecordsByPage(userId, pageNum, pageSize));
     }
 }

@@ -12,7 +12,6 @@
     <select id="selectUserById" resultType="org.example.pojo.User">
         select * from ordinary_users where user_id = #{user_id}
     </select>
-<!--    todo:这里修改更新语句为根据当前登录者的id对其信息进行修改，而不是根据手机号-->
     <update id="updateUserInfo" parameterType="org.example.pojo.User">
         update ordinary_users
         set name = #{name},

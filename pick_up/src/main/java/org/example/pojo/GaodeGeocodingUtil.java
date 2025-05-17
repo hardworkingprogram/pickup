@@ -38,7 +38,7 @@ public class GaodeGeocodingUtil {
                     .timeout(java.time.Duration.ofSeconds(10)) // 整体请求超时
                     .build();
 
-            //todo:每执行三次查询后，暂停一会再继续
+            // 每执行三次查询后，暂停一会再继续
             Thread.sleep(1000);
             // 同步阻塞发送（天然串行）
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

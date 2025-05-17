@@ -33,7 +33,6 @@ public class PartTimePickupUserController {
         if ("part_time_user".equals(role)) {
             partTimePickupUser = partTimePickupUserService.login(phone_number, password);
         }
-        // todo:登录功能session需要保存用户的id以便后续操作
         if (partTimePickupUser != null) {
             HttpSession session = request.getSession();
             session.setAttribute("phone_number", phone_number);
@@ -81,7 +80,7 @@ public class PartTimePickupUserController {
 
     // 获取所有代取申请列表
     // 返回经纬度和其他需要展示的信息即可
-    // todo:目前实现的是列出所有的申请，并不排序。所以目前要做的就是排序。
+    // todo:修改距离为根据快递点-代取用户当前位置-送达位置的总距离排序
     @GetMapping("/getAllApplications")
     @ResponseBody
     public List<PickupApplication> getAllApplications() {
