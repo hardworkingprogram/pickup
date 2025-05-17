@@ -9,6 +9,19 @@
         SELECT * FROM part_time_pickup_users
     </select>
     
+    <!-- 获取每日新增代取申请数量 -->
+    <select id="getDailyNewApplicationsCount" resultType="java.util.Map">
+        SELECT
+            DATE(pickup_time) AS date,  <!-- 提取日期部分 -->
+            COUNT(*) AS count           <!-- 统计数量 -->
+        FROM
+            pickup_applications
+        GROUP BY
+            DATE(pickup_time)           <!-- 按日期分组 -->
+        ORDER BY
+            date;                      <!-- 按日期排序 -->
+    </select>
+    
     <!-- TODO: 添加其他管理员统计相关的SQL查询 -->
 
 </mapper> 

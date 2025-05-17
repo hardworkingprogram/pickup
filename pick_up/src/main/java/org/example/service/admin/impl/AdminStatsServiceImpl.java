@@ -49,4 +49,12 @@ public class AdminStatsServiceImpl implements AdminStatsService {
 
         return finalDistribution;
     }
+
+    @Override
+    public List<Map<String, Object>> getDailyNewApplicationsCount() {
+        // 调用 Mapper 方法获取数据
+        return adminStatsMapper.getDailyNewApplicationsCount();
+    }
+
+    // TODO: 添加其他统计方法实现
 }

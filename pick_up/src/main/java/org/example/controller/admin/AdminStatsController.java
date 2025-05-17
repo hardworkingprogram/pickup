@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -25,6 +26,17 @@ public class AdminStatsController {
     @ResponseBody
     public Map<String, Long> getPartTimeUserRatingDistribution() {
         return adminStatsService.getPartTimeUserRatingDistribution();
+    }
+
+    /**
+     * 获取每日新增代取申请数量
+     * 
+     * @return 包含日期和数量的列表
+     */
+    @GetMapping("/dailyNewApplicationsCount")
+    @ResponseBody
+    public List<Map<String, Object>> getDailyNewApplicationsCount() {
+        return adminStatsService.getDailyNewApplicationsCount();
     }
 
     // TODO: 添加其他统计接口
