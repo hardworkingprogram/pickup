@@ -30,13 +30,24 @@ public class AdminStatsController {
 
     /**
      * 获取每日新增代取申请数量
-     * 
+     *
      * @return 包含日期和数量的列表
      */
-    @GetMapping("/dailyNewApplicationsCount")
+    @GetMapping("/monthlyNewApplicationsCount")
     @ResponseBody
-    public List<Map<String, Object>> getDailyNewApplicationsCount() {
-        return adminStatsService.getDailyNewApplicationsCount();
+    public List<Map<String, Object>> getMonthlyNewApplicationsCount() {
+        return adminStatsService.getMonthlyNewApplicationsCount();
+    }
+
+    /**
+     * 获取每月包裹到达数量
+     *
+     * @return 包含日期和数量的列表
+     */
+    @GetMapping("/monthlyPackageArrivalCount")
+    @ResponseBody
+    public List<Map<String, Object>> getMonthlyPackageArrivalCount() {
+        return adminStatsService.getMonthlyPackageArrivalCount();
     }
 
     // TODO: 添加其他统计接口

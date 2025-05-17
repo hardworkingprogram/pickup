@@ -167,11 +167,11 @@ public class PartTimePickupUserController {
     @ResponseBody
     public List<ExpressPoint> getAllExpressPoints() {
         List<ExpressPoint> expressPoints = partTimePickupUserService.getAllExpressPoints();
-        // 打印列表中的所有数据
-        for (ExpressPoint point : expressPoints) {
-            System.out.println(point.getPointId() + " " + point.getPointName() + " " + point.getLng() + " "
-                    + point.getLat());
-        }
+//        // 打印列表中的所有数据
+//        for (ExpressPoint point : expressPoints) {
+//            System.out.println(point.getPointId() + " " + point.getPointName() + " " + point.getLng() + " "
+//                    + point.getLat());
+//        }
         return expressPoints;
     }
 

@@ -10,16 +10,31 @@
     </select>
     
     <!-- 获取每日新增代取申请数量 -->
-    <select id="getDailyNewApplicationsCount" resultType="java.util.Map">
+    <select id="getMonthlyNewApplicationsCount" resultType="java.util.Map">
         SELECT
-            DATE(pickup_time) AS date,  <!-- 提取日期部分 -->
+            DATE_FORMAT(pickup_time, '%Y-%m') AS month,  <!-- 提取年月部分 -->
             COUNT(*) AS count           <!-- 统计数量 -->
         FROM
             pickup_applications
         GROUP BY
-            DATE(pickup_time)           <!-- 按日期分组 -->
+            DATE_FORMAT(pickup_time, '%Y-%m')
         ORDER BY
-            date;                      <!-- 按日期排序 -->
+            month;
+    </select>
+
+    <!-- 新增获取每日包裹到达数量 -->
+    <select id="getMonthlyPackageArrivalCount" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(arrival_time, '%Y-%m') AS month,  <!-- 提取年月部分 -->
+            COUNT(*) AS count
+        FROM
+            packages
+        WHERE
+            arrival_time IS NOT NULL
+        GROUP BY
+            DATE_FORMAT(arrival_time, '%Y-%m')
+        ORDER BY
+            month;
     </select>
     
     <!-- TODO: 添加其他管理员统计相关的SQL查询 -->

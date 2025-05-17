@@ -18,10 +18,17 @@ public interface AdminStatsMapper {
 
     /**
      * 获取每日新增代取申请数量
-     * 
+     *
      * @return 包含日期和数量的列表 (例如: [{date: '2023-10-26', count: 10}])
      */
-    List<Map<String, Object>> getDailyNewApplicationsCount();
+    List<Map<String, Object>> getMonthlyNewApplicationsCount();
+
+    /**
+     * 获取每日包裹到达数量
+     *
+     * @return 包含日期和数量的列表
+     */
+    List<Map<String, Object>> getMonthlyPackageArrivalCount();
 
     // TODO: 添加其他管理员统计相关的Mapper方法
 }

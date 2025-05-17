@@ -51,9 +51,93 @@ public class AdminStatsServiceImpl implements AdminStatsService {
     }
 
     @Override
-    public List<Map<String, Object>> getDailyNewApplicationsCount() {
-        // 调用 Mapper 方法获取数据
-        return adminStatsMapper.getDailyNewApplicationsCount();
+    public List<Map<String, Object>> getMonthlyNewApplicationsCount() {
+        // 1. 调用 Mapper 方法获取数据库中存在新增申请的月份数据
+        List<Map<String, Object>> newApplications = adminStatsMapper.getMonthlyNewApplicationsCount();
+
+        // 2. 将数据库返回的数据转换成 Map，方便按月份查找
+        Map<String, Long> applicationCountMap = newApplications.stream()
+                .collect(Collectors.toMap(
+                        item -> (String) item.get("month"), // 使用月份字符串作为 key
+                        item -> (Long) item.get("count"),
+                        (oldValue, newValue) -> newValue // 处理月份重复的情况
+                ));
+
+        // 3. 确定月份范围（从最早的新增申请月份到当前月份）
+        List<String> months = newApplications.stream()
+                .map(item -> (String) item.get("month"))
+                .sorted() // 按月份字符串排序
+                .collect(Collectors.toList());
+
+        if (months.isEmpty()) {
+            return new java.util.ArrayList<>(); // 如果没有数据，返回空列表
+        }
+
+        // 解析最早的年月
+        java.time.YearMonth startMonth = java.time.YearMonth.parse(months.get(0));
+        java.time.YearMonth endMonth = java.time.YearMonth.now();
+
+        // 4. 生成完整月份列表并填充数据
+        List<Map<String, Object>> monthlyStats = new java.util.ArrayList<>();
+        java.time.YearMonth currentMonth = startMonth;
+        while (!currentMonth.isAfter(endMonth)) {
+            String monthStr = currentMonth.toString(); // 格式为 YYYY-MM
+            Long count = applicationCountMap.getOrDefault(monthStr, 0L);
+
+            Map<String, Object> monthlyStat = new HashMap<>();
+            monthlyStat.put("month", monthStr);
+            monthlyStat.put("count", count);
+            monthlyStats.add(monthlyStat);
+
+            currentMonth = currentMonth.plusMonths(1);
+        }
+
+        return monthlyStats;
+    }
+
+    @Override
+    public List<Map<String, Object>> getMonthlyPackageArrivalCount() {
+        // 1. 调用 Mapper 方法获取数据库中存在到达量的月份数据
+        List<Map<String, Object>> arrivedPackages = adminStatsMapper.getMonthlyPackageArrivalCount();
+
+        // 2. 将数据库返回的数据转换成 Map，方便按月份查找
+        Map<String, Long> arrivalCountMap = arrivedPackages.stream()
+                .collect(Collectors.toMap(
+                        item -> (String) item.get("month"), // 直接使用月份字符串作为 key
+                        item -> (Long) item.get("count"),
+                        (oldValue, newValue) -> newValue // 处理月份重复的情况
+                ));
+
+        // 3. 确定月份范围（从最早的到达月份到当前月份）
+        List<String> months = arrivedPackages.stream()
+                .map(item -> (String) item.get("month"))
+                .sorted() // 按月份字符串排序
+                .collect(Collectors.toList());
+
+        if (months.isEmpty()) {
+            return new java.util.ArrayList<>(); // 如果没有数据，返回空列表
+        }
+
+        // 解析最早的年月
+        java.time.YearMonth startMonth = java.time.YearMonth.parse(months.get(0));
+        java.time.YearMonth endMonth = java.time.YearMonth.now();
+
+        // 4. 生成完整月份列表并填充数据
+        List<Map<String, Object>> monthlyStats = new java.util.ArrayList<>();
+        java.time.YearMonth currentMonth = startMonth;
+        while (!currentMonth.isAfter(endMonth)) {
+            String monthStr = currentMonth.toString(); // 格式为 YYYY-MM
+            Long count = arrivalCountMap.getOrDefault(monthStr, 0L);
+
+            Map<String, Object> monthlyStat = new HashMap<>();
+            monthlyStat.put("month", monthStr);
+            monthlyStat.put("count", count);
+            monthlyStats.add(monthlyStat);
+
+            currentMonth = currentMonth.plusMonths(1);
+        }
+
+        return monthlyStats;
     }
 
     // TODO: 添加其他统计方法实现
