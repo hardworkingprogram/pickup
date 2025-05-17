@@ -5,6 +5,7 @@ import org.example.pojo.PartTimePickupUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.example.pojo.PickupApplication;
 import org.example.pojo.User;
+import org.example.pojo.ExpressPoint;
 
 import java.util.List;
 
@@ -30,4 +31,7 @@ public interface PartTimePickupUserMapper {
     PartTimePickupUser selectByPhone(String phoneNumber);
 
     int insertUser(PartTimePickupUser user);
+
+    // 获取所有快递点信息
+    List<ExpressPoint> getAllExpressPoints();
 }

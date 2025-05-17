@@ -1,9 +1,6 @@
 package org.example.controller.partTimeUser;
 
-import org.example.pojo.Notification;
-import org.example.pojo.PartTimePickupUser;
-import org.example.pojo.PickupApplication;
-import org.example.pojo.User;
+import org.example.pojo.*;
 import org.example.service.ordinaryUser.NotificationService;
 import org.example.service.partTimeUser.PartTimePickupUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,11 +78,11 @@ public class PartTimePickupUserController {
     // 获取所有代取申请列表
     // 返回经纬度和其他需要展示的信息即可
     // todo:修改距离为根据快递点-代取用户当前位置-送达位置的总距离排序
-//    @GetMapping("/getAllApplications")
-//    @ResponseBody
-//    public List<PickupApplication> getAllApplications() {
-//        return partTimePickupUserService.getAllApplications();
-//    }
+    // @GetMapping("/getAllApplications")
+    // @ResponseBody
+    // public List<PickupApplication> getAllApplications() {
+    // return partTimePickupUserService.getAllApplications();
+    // }
     // 获取所有代取申请列表（修改为接收用户位置参数并调用新 Service 方法）
     @GetMapping("/getAllApplications")
     @ResponseBody
@@ -94,7 +91,8 @@ public class PartTimePickupUserController {
             @RequestParam("userLat") double userLat) { // 接收用户纬度
         System.out.println("Received user location: Lng=" + userLng + ", Lat=" + userLat);
         // 调用 Service 层新方法获取排序好的列表
-        List<PickupApplication> applications = partTimePickupUserService.getAllApplicationsWithLocationAndSort(userLng, userLat);
+        List<PickupApplication> applications = partTimePickupUserService.getAllApplicationsWithLocationAndSort(userLng,
+                userLat);
         return applications;
     }
 
@@ -149,8 +147,9 @@ public class PartTimePickupUserController {
             @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
         try {
-//            System.out.println("getNotificationsForPickupByPage called with userId: " + pickupUserId + ", pageNum: "
-//                    + pageNum + ", pageSize: " + pageSize);
+            // System.out.println("getNotificationsForPickupByPage called with userId: " +
+            // pickupUserId + ", pageNum: "
+            // + pageNum + ", pageSize: " + pageSize);
             Map<String, Object> result = notificationService.getNotificationsForPickupByPage(pickupUserId, pageNum,
                     pageSize);
             System.out.println("Returned notifications for pickup user: " + result.get("list"));
@@ -161,6 +160,19 @@ public class PartTimePickupUserController {
             errorResult.put("error", "系统异常: " + e.getMessage());
             return errorResult;
         }
+    }
+
+    // 新增接口，获取所有快递点信息
+    @GetMapping("/getAllExpressPoints")
+    @ResponseBody
+    public List<ExpressPoint> getAllExpressPoints() {
+        List<ExpressPoint> expressPoints = partTimePickupUserService.getAllExpressPoints();
+        // 打印列表中的所有数据
+        for (ExpressPoint point : expressPoints) {
+            System.out.println(point.getPointId() + " " + point.getPointName() + " " + point.getLng() + " "
+                    + point.getLat());
+        }
+        return expressPoints;
     }
 
 }

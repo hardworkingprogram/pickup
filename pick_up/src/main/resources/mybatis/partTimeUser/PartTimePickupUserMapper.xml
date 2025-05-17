@@ -62,4 +62,14 @@
         INSERT INTO part_time_pickup_users (phone_number, password, name, nickname, contact_info, score)
         VALUES (#{phone_number}, #{password}, #{name}, #{nickname}, #{contact_info}, #{score})
     </insert>
+
+    <!-- 新增查询所有快递点信息 -->
+    <select id="getAllExpressPoints" resultType="org.example.pojo.ExpressPoint">
+        SELECT 
+            point_id AS pointId,
+            point_name AS pointName,
+            lng,
+            lat
+        FROM express_points
+    </select>
 </mapper>

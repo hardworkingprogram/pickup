@@ -1,6 +1,5 @@
 package org.example.service.partTimeUser.impl;
 
-
 import org.example.mapper.ordinaryUser.NotificationMapper;
 import org.example.mapper.partTimeUser.PartTimePickupUserMapper;
 import org.example.pojo.*;
@@ -34,28 +33,30 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
     public List<PickupApplication> getAllApplications() {
         // 这个方法将不再使用，或者可以保留用于其他不需要排序的场景
         // 新的排序逻辑在 getAllApplicationsWithLocationAndSort 中实现
-        throw new UnsupportedOperationException("This method is deprecated. Use getAllApplicationsWithLocationAndSort instead.");
-//        // 获取所有未处理的订单
-//        List<PickupApplication> applications = partTimePickupUserMapper.selectUnassignedTasks();
-//        // 添加经纬度
-//        for (PickupApplication app : applications) {
-//            String location = app.getPickup_location();
-//            double[] lngLat = GaodeGeocodingUtil.addressToLngLat(location);
-//
-//            if (lngLat != null) {
-//                app.setPickup_lng(lngLat[0]); // 新增经度字段（需在PickupApplication实体中添加）
-//                app.setPickup_lat(lngLat[1]); // 新增纬度字段
-//            } else {
-//                app.setPickup_lng(null);
-//                app.setPickup_lat(null);
-//            }
-//            System.out.println(app.getPickup_lng());
-//            System.out.println(app.getPickup_lat());
-//            System.out.println(app.getPickup_location());
-//            System.out.println("\n");
-//        }
-//
-//        return applications;
+        throw new UnsupportedOperationException(
+                "This method is deprecated. Use getAllApplicationsWithLocationAndSort instead.");
+        // // 获取所有未处理的订单
+        // List<PickupApplication> applications =
+        // partTimePickupUserMapper.selectUnassignedTasks();
+        // // 添加经纬度
+        // for (PickupApplication app : applications) {
+        // String location = app.getPickup_location();
+        // double[] lngLat = GaodeGeocodingUtil.addressToLngLat(location);
+        //
+        // if (lngLat != null) {
+        // app.setPickup_lng(lngLat[0]); // 新增经度字段（需在PickupApplication实体中添加）
+        // app.setPickup_lat(lngLat[1]); // 新增纬度字段
+        // } else {
+        // app.setPickup_lng(null);
+        // app.setPickup_lat(null);
+        // }
+        // System.out.println(app.getPickup_lng());
+        // System.out.println(app.getPickup_lat());
+        // System.out.println(app.getPickup_location());
+        // System.out.println("\n");
+        // }
+        //
+        // return applications;
     }
 
     @Override
@@ -72,11 +73,11 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
         int packageId = application.getPackage_id();
         int userId = application.getUser_id();
 
-        //更新包裹状态
+        // 更新包裹状态
         int updatePackageRows = partTimePickupUserMapper.updatePackageTimeAndId(packageId, pickupUserId);
-        //更新申请状态
+        // 更新申请状态
         int updateApplicationRows = partTimePickupUserMapper.updateApplicationStatus(applicationId);
-        //发送通知给用户
+        // 发送通知给用户
         String content = "您的包裹（包裹ID：" + packageId + "）正在配送中，请耐心等候。";
         Notification notification = new Notification(userId, packageId, "快递接单通知", content, new Date());
         notificationMapper.insertNotification(notification);
@@ -122,12 +123,14 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
                 Double expressLat = app.getExpress_lat();
 
                 // 确保快递点经纬度和送达位置经纬度都已获取
-                if (expressLng != null && expressLat != null && app.getPickup_lng() != null && app.getPickup_lat() != null) {
+                if (expressLng != null && expressLat != null && app.getPickup_lng() != null
+                        && app.getPickup_lat() != null) {
                     // 计算用户到快递点的距离
                     double distUserToExpress = GeoUtil.calculateDistance(userLat, userLng, expressLat, expressLng);
 
                     // 计算快递点到送达位置的距离
-                    double distExpressToPickup = GeoUtil.calculateDistance(expressLat, expressLng, app.getPickup_lat(), app.getPickup_lng()); // 修正这里经纬度参数顺序
+                    double distExpressToPickup = GeoUtil.calculateDistance(expressLat, expressLng, app.getPickup_lat(),
+                            app.getPickup_lng()); // 修正这里经纬度参数顺序
 
                     // 计算总距离
                     double totalDistance = distUserToExpress + distExpressToPickup;
@@ -150,6 +153,11 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
         applications.sort(Comparator.comparingDouble(PickupApplication::getTotalDistance));
 
         return applications;
+    }
+
+    @Override
+    public List<ExpressPoint> getAllExpressPoints() {
+        return partTimePickupUserMapper.getAllExpressPoints();
     }
 
 }
