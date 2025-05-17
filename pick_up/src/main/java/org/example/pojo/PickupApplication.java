@@ -16,6 +16,28 @@ public class PickupApplication {
     private Double express_lat;
     private Double totalDistance;
 
+
+
+    // 添加新的字段
+    private String userNickname; // 用户昵称
+    private String expressPointName; // 快递点名称
+
+    public String getExpressPointName() {
+        return expressPointName;
+    }
+
+    public void setExpressPointName(String expressPointName) {
+        this.expressPointName = expressPointName;
+    }
+
+    public String getUserNickname() {
+        return userNickname;
+    }
+
+    public void setUserNickname(String userNickname) {
+        this.userNickname = userNickname;
+    }
+
     public int getApplication_id() {
         return application_id;
     }
@@ -107,7 +129,8 @@ public class PickupApplication {
     public PickupApplication() {
     }
 
-    public PickupApplication(int application_id, int user_id, int package_id, Date pickup_time, String pickup_location, String status, Double pickup_lng, Double pickup_lat, Double express_lng, Double express_lat, Double totalDistance) {
+    public PickupApplication(int application_id, int user_id, int package_id, Date pickup_time, String pickup_location, String status,
+                             Double pickup_lng, Double pickup_lat, Double express_lng, Double express_lat, Double totalDistance, String userNickname, String expressPointName) {
         this.application_id = application_id;
         this.user_id = user_id;
         this.package_id = package_id;
@@ -119,5 +142,7 @@ public class PickupApplication {
         this.express_lng = express_lng;
         this.express_lat = express_lat;
         this.totalDistance = totalDistance;
+        this.userNickname = userNickname;
+        this.expressPointName = expressPointName;
     }
 }

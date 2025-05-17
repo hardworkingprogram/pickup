@@ -18,12 +18,14 @@
         pa.pickup_time,
         pa.pickup_location,
         pa.status,
-        <!-- 不从数据库查询 pickup_lng, pickup_lat -->
-        ep.lng AS express_lng,  <!-- 快递点经度 -->
-        ep.lat AS express_lat   <!-- 快递点纬度 -->
+        ep.lng AS express_lng,
+        ep.lat AS express_lat,
+        u.nickname AS userNickname,  <!-- 用户昵称 -->
+        ep.point_name AS expressPointName <!-- 快递点名称 -->
         FROM pickup_applications pa
         JOIN packages p ON pa.package_id = p.package_id
         JOIN express_points ep ON p.point_id = ep.point_id
+        JOIN ordinary_users u ON pa.user_id = u.user_id  <!-- JOIN ordinary_users 表 -->
         WHERE pa.status = '待处理'
     </select>
 
