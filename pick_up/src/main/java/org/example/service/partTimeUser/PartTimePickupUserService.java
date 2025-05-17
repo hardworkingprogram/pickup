@@ -15,4 +15,6 @@ public interface PartTimePickupUserService {
     boolean updateUserInfo(PartTimePickupUser partTimePickupUser);
     PartTimePickupUser getByPhone(String phoneNumber);
     boolean register(PartTimePickupUser user);
+    // 新增方法，获取带位置信息并已排序的申请列表
+    List<PickupApplication> getAllApplicationsWithLocationAndSort(double userLng, double userLat);
 }

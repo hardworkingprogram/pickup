@@ -9,9 +9,21 @@
     <select id="selectUserByPhoneAndPassword" resultType="org.example.pojo.PartTimePickupUser">
         SELECT * FROM part_time_pickup_users WHERE phone_number = #{phone_number} AND password = #{password}
     </select>
+    <!-- 修改 selectUnassignedTasks 查询，获取快递点经纬度 -->
     <select id="selectUnassignedTasks" resultType="org.example.pojo.PickupApplication">
-        SELECT pa.*
+        SELECT
+        pa.application_id,
+        pa.user_id,
+        pa.package_id,
+        pa.pickup_time,
+        pa.pickup_location,
+        pa.status,
+        <!-- 不从数据库查询 pickup_lng, pickup_lat -->
+        ep.lng AS express_lng,  <!-- 快递点经度 -->
+        ep.lat AS express_lat   <!-- 快递点纬度 -->
         FROM pickup_applications pa
+        JOIN packages p ON pa.package_id = p.package_id
+        JOIN express_points ep ON p.point_id = ep.point_id
         WHERE pa.status = '待处理'
     </select>
 

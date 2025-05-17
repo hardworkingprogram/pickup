@@ -81,10 +81,21 @@ public class PartTimePickupUserController {
     // 获取所有代取申请列表
     // 返回经纬度和其他需要展示的信息即可
     // todo:修改距离为根据快递点-代取用户当前位置-送达位置的总距离排序
+//    @GetMapping("/getAllApplications")
+//    @ResponseBody
+//    public List<PickupApplication> getAllApplications() {
+//        return partTimePickupUserService.getAllApplications();
+//    }
+    // 获取所有代取申请列表（修改为接收用户位置参数并调用新 Service 方法）
     @GetMapping("/getAllApplications")
     @ResponseBody
-    public List<PickupApplication> getAllApplications() {
-        return partTimePickupUserService.getAllApplications();
+    public List<PickupApplication> getAllApplications(
+            @RequestParam("userLng") double userLng, // 接收用户经度
+            @RequestParam("userLat") double userLat) { // 接收用户纬度
+        System.out.println("Received user location: Lng=" + userLng + ", Lat=" + userLat);
+        // 调用 Service 层新方法获取排序好的列表
+        List<PickupApplication> applications = partTimePickupUserService.getAllApplicationsWithLocationAndSort(userLng, userLat);
+        return applications;
     }
 
     // 新增接单接口
