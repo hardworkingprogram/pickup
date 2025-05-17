@@ -1,6 +1,5 @@
 package org.example.mapper.partTimeUser;
 
-
 import org.apache.ibatis.annotations.Param;
 import org.example.pojo.PartTimePickupUser;
 import org.apache.ibatis.annotations.Mapper;
@@ -12,7 +11,10 @@ import java.util.List;
 @Mapper
 public interface PartTimePickupUserMapper {
     PartTimePickupUser getPartTimeUserById(int pickup_user_id);
-    PartTimePickupUser selectUserByPhoneAndPassword(@Param("phone_number") String phone_number, @Param("password") String password);
+
+    PartTimePickupUser selectUserByPhoneAndPassword(@Param("phone_number") String phone_number,
+            @Param("password") String password);
+
     List<PickupApplication> selectUnassignedTasks();
 
     // 查询订单详情
@@ -24,6 +26,8 @@ public interface PartTimePickupUserMapper {
     int updatePackageTimeAndId(@Param("packageId") int packageId, @Param("pickupUserId") int pickupUserId);
 
     int updateUserInfo(PartTimePickupUser partTimePickupUser);
+
     PartTimePickupUser selectByPhone(String phoneNumber);
+
     int insertUser(PartTimePickupUser user);
 }

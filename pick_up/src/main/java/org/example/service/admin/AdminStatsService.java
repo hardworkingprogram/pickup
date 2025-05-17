@@ -1,0 +1,14 @@
+package org.example.service.admin;
+
+import java.util.Map;
+
+public interface AdminStatsService {
+    /**
+     * 获取兼职用户评分分布统计数据
+     * 
+     * @return 评分区间到用户数量的Map
+     */
+    Map<String, Long> getPartTimeUserRatingDistribution();
+
+    // TODO: 添加其他统计方法
+}

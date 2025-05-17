@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.admin.AdminStatsMapper">
+
+    <!-- 获取所有兼职用户 -->
+    <select id="getAllPartTimeUsers" resultType="org.example.pojo.PartTimePickupUser">
+        SELECT * FROM part_time_pickup_users
+    </select>
+    
+    <!-- TODO: 添加其他管理员统计相关的SQL查询 -->
+
+</mapper> 
