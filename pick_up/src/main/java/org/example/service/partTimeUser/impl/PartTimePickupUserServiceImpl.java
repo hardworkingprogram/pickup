@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PartTimePickupUserServiceImpl implements PartTimePickupUserService {
@@ -18,6 +20,9 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
     private PartTimePickupUserMapper partTimePickupUserMapper;
     @Autowired
     private NotificationMapper notificationMapper;
+
+    // 创建一个固定大小的线程池，线程数量可以根据实际情况调整
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     @Override
     public PartTimePickupUser getPartTimeUserById(int pickup_user_id) {
@@ -107,57 +112,113 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
         // 1. 获取所有待处理的订单，同时获取快递点经纬度
         List<PickupApplication> applications = partTimePickupUserMapper.selectUnassignedTasks();
 
-        // 2. 对每个申请进行地理编码（送达位置），计算总距离
-        for (PickupApplication app : applications) {
-            // 获取送达位置经纬度 (通过地理编码获取)
-            String pickupLocation = app.getPickup_location();
-            // 您可以根据需要提供城市参数来提高地理编码精度，例如从用户或系统配置中获取
-            double[] pickupLngLat = GaodeGeocodingUtil.addressToLngLat(pickupLocation); // 调用地理编码工具
+        if (applications.isEmpty()) {
+            return applications;
+        }
 
-            if (pickupLngLat != null && pickupLngLat.length == 2) {
-                app.setPickup_lng(pickupLngLat[0]);
-                app.setPickup_lat(pickupLngLat[1]);
+        // 2. 创建 Callable 任务列表
+        List<Callable<PickupApplication>> tasks = applications.stream()
+                .map(app -> (Callable<PickupApplication>) () -> {
+                    // 对每个申请进行地理编码（送达位置），计算总距离
+                    // 获取送达位置经纬度 (通过地理编码获取)
+                    String pickupLocation = app.getPickup_location();
+                    // 您可以根据需要提供城市参数来提高地理编码精度，例如从用户或系统配置中获取
+                    double[] pickupLngLat = GaodeGeocodingUtil.addressToLngLat(pickupLocation); // 调用地理编码工具
 
-                // 获取快递点经纬度 (已通过 Mapper 查询获取)
-                Double expressLng = app.getExpress_lng();
-                Double expressLat = app.getExpress_lat();
+                    if (pickupLngLat != null && pickupLngLat.length == 2) {
+                        app.setPickup_lng(pickupLngLat[0]);
+                        app.setPickup_lat(pickupLngLat[1]);
 
-                // 确保快递点经纬度和送达位置经纬度都已获取
-                if (expressLng != null && expressLat != null && app.getPickup_lng() != null
-                        && app.getPickup_lat() != null) {
-                    // 计算用户到快递点的距离
-                    double distUserToExpress = GeoUtil.calculateDistance(userLat, userLng, expressLat, expressLng);
+                        // 获取快递点经纬度 (已通过 Mapper 查询获取)
+                        Double expressLng = app.getExpress_lng();
+                        Double expressLat = app.getExpress_lat();
 
-                    // 计算快递点到送达位置的距离
-                    double distExpressToPickup = GeoUtil.calculateDistance(expressLat, expressLng, app.getPickup_lat(),
-                            app.getPickup_lng()); // 修正这里经纬度参数顺序
+                        // 确保快递点经纬度和送达位置经纬度都已获取
+                        if (expressLng != null && expressLat != null && app.getPickup_lng() != null
+                                && app.getPickup_lat() != null) {
+                            // 计算用户到快递点的距离
+                            double distUserToExpress = GeoUtil.calculateDistance(userLat, userLng, expressLat,
+                                    expressLng);
 
-                    // 计算总距离
-                    double totalDistance = distUserToExpress + distExpressToPickup;
-                    app.setTotalDistance(totalDistance);
+                            // 计算快递点到送达位置的距离
+                            double distExpressToPickup = GeoUtil.calculateDistance(expressLat, expressLng,
+                                    app.getPickup_lat(),
+                                    app.getPickup_lng());
 
-                } else {
-                    // 如果获取不到必要的经纬度，将总距离设为一个很大的值，使其排在后面
-                    app.setTotalDistance(Double.MAX_VALUE);
-                }
+                            // 计算总距离
+                            double totalDistance = distUserToExpress + distExpressToPickup;
+                            app.setTotalDistance(totalDistance);
 
-            } else {
-                // 如果送达位置地理编码失败，将总距离设为一个很大的值
-                app.setPickup_lng(null); // 将经纬度设为 null
-                app.setPickup_lat(null);
-                app.setTotalDistance(Double.MAX_VALUE);
+                        } else {
+                            // 如果获取不到必要的经纬度，将总距离设为一个很大的值，使其排在后面
+                            app.setTotalDistance(Double.MAX_VALUE);
+                        }
+
+                    } else {
+                        // 如果送达位置地理编码失败，将总距离设为一个很大的值
+                        app.setPickup_lng(null); // 将经纬度设为 null
+                        app.setPickup_lat(null);
+                        app.setTotalDistance(Double.MAX_VALUE);
+                    }
+                    return app; // 返回处理后的 PickupApplication 对象
+                })
+                .collect(Collectors.toList());
+
+        // 3. 提交任务给线程池并收集 Future
+        List<Future<PickupApplication>> futures = null;
+        try {
+            futures = executorService.invokeAll(tasks);
+        } catch (InterruptedException e) {
+            // 处理中断异常
+            Thread.currentThread().interrupt();
+            e.printStackTrace(); // 或者记录日志
+            return applications; // 返回原始列表或空列表，取决于期望的行为
+        }
+
+        // 4. 获取每个任务的结果
+        List<PickupApplication> processedApplications = new java.util.ArrayList<>();
+        for (Future<PickupApplication> future : futures) {
+            try {
+                processedApplications.add(future.get()); // 获取处理后的对象
+            } catch (InterruptedException | ExecutionException e) {
+                // 处理获取结果时的异常
+                e.printStackTrace(); // 或者记录日志
+                // 可以选择跳过当前申请或进行其他错误处理
             }
         }
 
-        // 3. 按总距离排序
-        applications.sort(Comparator.comparingDouble(PickupApplication::getTotalDistance));
+        // 5. 按总距离排序
+        processedApplications.sort(Comparator.comparingDouble(PickupApplication::getTotalDistance));
 
-        return applications;
+        return processedApplications;
     }
 
     @Override
     public List<ExpressPoint> getAllExpressPoints() {
         return partTimePickupUserMapper.getAllExpressPoints();
     }
+
+    // 在服务关闭时关闭线程池，避免资源泄露
+    public void shutdown() {
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    System.err.println("Executor service did not terminate."); // 或者记录日志
+                }
+            }
+        } catch (InterruptedException ie) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    // 为了确保 shutdown 方法被调用，可以考虑实现 DisposableBean 接口或使用 @PreDestroy 注解
+    // 例如:
+    // @PreDestroy
+    // public void onDestroy() {
+    // shutdown();
+    // }
 
 }
