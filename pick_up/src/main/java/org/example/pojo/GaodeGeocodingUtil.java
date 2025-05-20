@@ -31,7 +31,7 @@ public class GaodeGeocodingUtil {
                     "https://restapi.amap.com/v3/geocode/geo?key=%s&address=%s&city=%s",
                     API_KEY, address, city
             );
-            System.out.println("请求地址：" + url);
+            //System.out.println("请求地址：" + url);
             // 构建请求（带响应超时）
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -59,7 +59,7 @@ public class GaodeGeocodingUtil {
 
     private static double[] handleResponse(String responseBody) {
         try {
-            System.out.println("响应内容：" + responseBody);
+            //System.out.println("响应内容：" + responseBody);
             JSONObject json = new JSONObject(responseBody);
             if (!"1".equals(json.getString("status"))) {
                 System.err.println("高德API错误：" + json.getString("info"));
@@ -73,7 +73,7 @@ public class GaodeGeocodingUtil {
             }
 
             String location = geocodes.getJSONObject(0).getString("location");
-            System.out.println("解析结果：" + location);
+            //System.out.println("解析结果：" + location);
             return parseLocation(location);
 
         } catch (Exception e) {

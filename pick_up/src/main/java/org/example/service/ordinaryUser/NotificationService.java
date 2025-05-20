@@ -16,4 +16,5 @@ public interface NotificationService {
 
     // 添加兼职代取用户通知分页查询方法
     Map<String, Object> getNotificationsForPickupByPage(int pickupUserId, int pageNum, int pageSize);
+    boolean readNotification(int notificationId);
 }

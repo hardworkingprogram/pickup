@@ -51,4 +51,9 @@
         FROM notifications_pickup
         WHERE user_id = #{pickupUserId}
     </select>
+    <update id="readNotification">
+        UPDATE notifications_pickup
+        SET is_read = 1
+        WHERE notification_id = #{notificationId}
+    </update>
 </mapper>

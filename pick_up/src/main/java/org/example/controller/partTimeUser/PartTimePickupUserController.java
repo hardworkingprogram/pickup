@@ -100,13 +100,14 @@ public class PartTimePickupUserController {
     @PostMapping("/acceptOrder/{applicationId}")
     @ResponseBody
     public String acceptOrder(
+            @RequestParam("userId") int userId,
             @PathVariable("applicationId") int applicationId,
             HttpServletRequest request) {
         try {
             // 从Session获取当前兼职用户ID（登录时保存的user_id）
             HttpSession session = request.getSession();
-            Integer pickupUserId = (Integer) session.getAttribute("user_id");
-            if (pickupUserId == null) {
+            int pickupUserId = userId;
+            if (pickupUserId == 0) {
                 return "请先登录";
             }
 
@@ -173,6 +174,18 @@ public class PartTimePickupUserController {
 //                    + point.getLat());
 //        }
         return expressPoints;
+    }
+
+    // 实现修改通知为已读状态
+    @PostMapping("/readNotification")
+    @ResponseBody
+    public String readNotification(@RequestParam("notificationId") int notificationId) {
+        try {
+            boolean success = notificationService.readNotification(notificationId);
+            return success ? "修改成功" : "修改失败";
+        } catch (Exception e) {
+            return "系统异常：" + e.getMessage();
+        }
     }
 
 }

@@ -72,4 +72,9 @@ public class NotificationServiceImpl implements NotificationService {
 
         return result;
     }
+
+    @Override
+    public boolean readNotification(int notificationId) {
+        return notificationMapper.readNotification(notificationId) > 0;
+    }
 }
