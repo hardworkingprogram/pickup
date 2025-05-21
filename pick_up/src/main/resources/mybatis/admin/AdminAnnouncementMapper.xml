@@ -20,8 +20,7 @@
     <update id="updateAnnouncement" parameterType="org.example.pojo.Announcement">
         UPDATE announcements
         SET title = #{title},
-        content = #{content},
-        publish_time = #{publish_time}
+        content = #{content}
         WHERE announcement_id = #{announcement_id}
     </update>
     <delete id="deleteAnnouncement" parameterType="int">

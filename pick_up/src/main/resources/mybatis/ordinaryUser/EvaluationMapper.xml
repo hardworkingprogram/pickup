@@ -11,4 +11,19 @@
         SELECT * FROM evaluations
         WHERE user_id = #{userId}
     </select>
+    <update id="updatePickupUserScore" parameterType="int">
+        UPDATE part_time_pickup_users
+        SET score = (
+        -- 这里是计算新评分的逻辑，可能需要关联 evaluations 表
+        SELECT AVG(e.satisfaction)
+        FROM evaluations e
+        JOIN packages p ON e.package_id = p.package_id
+        WHERE p.pickup_user_id = part_time_pickup_users.pickup_user_id
+        )
+        WHERE pickup_user_id = (
+        SELECT pickup_user_id
+        FROM packages
+        WHERE package_id = #{packageId}
+        )
+    </update>
 </mapper>

@@ -38,12 +38,12 @@
         <choose>
             <when test="tableName == 'ordinary_users'">
                 UPDATE ${tableName}
-                SET account_status = 'frozen'
+                SET account_status = 'inactive'
                 WHERE user_id = #{userId}
             </when>
             <when test="tableName == 'part_time_pickup_users'">
                 UPDATE ${tableName}
-                SET account_status = 'frozen'
+                SET account_status = 'inactive'
                 WHERE pickup_user_id = #{userId}
             </when>
         </choose>
