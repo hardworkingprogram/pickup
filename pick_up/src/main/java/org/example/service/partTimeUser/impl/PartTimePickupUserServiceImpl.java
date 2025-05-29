@@ -22,7 +22,7 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
     private NotificationMapper notificationMapper;
 
     // 创建一个固定大小的线程池，线程数量可以根据实际情况调整
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Override
     public PartTimePickupUser getPartTimeUserById(int pickup_user_id) {
@@ -119,43 +119,30 @@ public class PartTimePickupUserServiceImpl implements PartTimePickupUserService 
         // 2. 创建 Callable 任务列表
         List<Callable<PickupApplication>> tasks = applications.stream()
                 .map(app -> (Callable<PickupApplication>) () -> {
-                    // 对每个申请进行地理编码（送达位置），计算总距离
                     // 获取送达位置经纬度 (通过地理编码获取)
                     String pickupLocation = app.getPickup_location();
-                    // 您可以根据需要提供城市参数来提高地理编码精度，例如从用户或系统配置中获取
                     double[] pickupLngLat = GaodeGeocodingUtil.addressToLngLat(pickupLocation); // 调用地理编码工具
-
                     if (pickupLngLat != null && pickupLngLat.length == 2) {
                         app.setPickup_lng(pickupLngLat[0]);
                         app.setPickup_lat(pickupLngLat[1]);
-
                         // 获取快递点经纬度 (已通过 Mapper 查询获取)
                         Double expressLng = app.getExpress_lng();
                         Double expressLat = app.getExpress_lat();
-
-                        // 确保快递点经纬度和送达位置经纬度都已获取
                         if (expressLng != null && expressLat != null && app.getPickup_lng() != null
                                 && app.getPickup_lat() != null) {
                             // 计算用户到快递点的距离
                             double distUserToExpress = GeoUtil.calculateDistance(userLat, userLng, expressLat,
                                     expressLng);
-
                             // 计算快递点到送达位置的距离
                             double distExpressToPickup = GeoUtil.calculateDistance(expressLat, expressLng,
                                     app.getPickup_lat(),
                                     app.getPickup_lng());
-
-                            // 计算总距离
                             double totalDistance = distUserToExpress + distExpressToPickup;
                             app.setTotalDistance(totalDistance);
-
                         } else {
-                            // 如果获取不到必要的经纬度，将总距离设为一个很大的值，使其排在后面
                             app.setTotalDistance(Double.MAX_VALUE);
                         }
-
                     } else {
-                        // 如果送达位置地理编码失败，将总距离设为一个很大的值
                         app.setPickup_lng(null); // 将经纬度设为 null
                         app.setPickup_lat(null);
                         app.setTotalDistance(Double.MAX_VALUE);
